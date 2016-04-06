@@ -1,0 +1,288 @@
+* ChameleonClusters
+
+This project enables the deployment of clusters on the Chameleon infrastructure.
+It is leveraging the *OpenStack API*,  the web framework *django* and the module
+*django Rest framework* to build a REST API.
+
+** Installation
+
+The  project  contains  a  *requirements.txt* files  that  contains  all  python
+dependencies required to  run the tool. To install all  the dependencies run the
+following command:
+
+#+BEGIN_src shell
+pip install -r requirements.txt
+#+END_src
+
+** Getting started
+
+*** Configure credentials
+
+Edit the file located in conf/secret.py, so that he has the following content.
+
+#+BEGIN_src python
+secret = {
+    "username": "YOUR_USERNAME",
+    "password": "YOUR_PASSWORD",
+    "project": "THE_NAME_OF_YOUR_PROJECT"
+}
+#+END_src
+
+*** Initialise data
+
+To initalise the database, run the following commands:
+
+#+BEGIN_src shell
+python manage.py makemigrations webservice
+python manage.py syncdb
+#+END_src
+
+*** Start the web application
+
+Run the following command from the project folder:
+
+#+BEGIN_src shell
+python manage.py runserver
+#+END_src
+
+You should get the following output:
+
+#+BEGIN_src shell
+Performing system checks...
+
+System check identified no issues (0 silenced).
+March 23, 2016 - 20:38:56
+Django version 1.8, using settings 'webservice.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CONTROL-C.
+#+END_src
+
+*** Initialise data
+
+Data will be initialised at you first interaction with the API. For this just to
+a simple request like accessing "http://127.0.0.1:8000/sites"
+
+** Accessing the API
+*** Browser
+Accessing the  "http://127.0.0.1:8000/sites" in  a browser  should lead  to the
+following web page:
+
+[[./docs/sites_browser.png]]
+
+By default  you are redirected to  "user-friendly" page that enables  to compose
+API request and to select HTTP methods such as {GET, POST, PUT, DELETE, OPTION}.
+
+Note that  adding "/?format=json" after the  URL redirects you to  the "classic"
+API output, as illustred with the following example:
+
+[[./docs/sites_browser_classic.png]]
+
+*** Command line
+
+You can also access API with tools such as *curl*:
+
+#+BEGIN_src shell
+curl http://127.0.0.1:8000/sites
+#+END_src
+
+it leads to the following ouput:
+
+#+BEGIN_src shell
+[{"id":1,"name":"KVM@TACC","os_auth_url":"https://openstack.tacc.chameleoncloud.org:5000/v2.0","cluster_ids":[]}]
+#+END_src
+
+** Creating an Hadoop cluster on the KVM Chameleon Cloud
+*** Get the ID of KVM Chameleon infrastructure
+
+To get all the sites available, run the following command:
+
+#+BEGIN_src shell
+curl http://127.0.0.1:8000/sites
+#+END_src
+
+We get this:
+
+#+BEGIN_src shell
+[{"id":1,"name":"KVM@TACC","os_auth_url":"https://openstack.tacc.chameleoncloud.org:5000/v2.0","cluster_ids":[]}]
+#+END_src
+
+It means that we have to use *1* as a cluster_id.
+
+*** Get the ID of Hadoop
+
+To list available softwares, run the following command:
+
+#+BEGIN_src shell
+curl http://127.0.0.1:8000/softwares/
+#+END_src
+
+We get this:
+
+#+BEGIN_src shell
+[{"id":1,"name":"mongodb","cluster_ids":[],"script_ids":[1,2,3,4]},{"id":2,"name":"common","cluster_ids":[],"script_ids":[5]},{"id":3,"name":"hadoop","cluster_ids":[],"script_ids":[6,7,8,9]}]
+#+END_src
+
+It means that we have to use *3* as a software_id.
+
+*** Get the ID of User
+
+To list available users (there should be only one user in the database), run the
+following command:
+
+#+BEGIN_src shell
+curl http://127.0.0.1:8000/users/
+#+END_src
+
+We get this:
+
+#+BEGIN_src shell
+[{"id":1,"username":"jpastor","password":"XXXXXXXXXXX","project":"FG-392","cluster_ids":[]}]
+#+END_src
+
+It means that we have to use *1* as a user_id.
+
+*** Create the Hadoop cluster
+
+We will create a cluster that will be associated to the following data:
+
+| Data type      | Data value        | id |
+|----------------+-------------------+----|
+| Infrastructure | KVM@ChameleonTACC |  1 |
+| Software       | Hadoop            |  3 |
+| User           | jpastor           |  1 |
+| Cluster name   | MyHadoopCluster   | NA |
+
+To  do  so,  you   have  to  send  a  JSON  dict   containing  the  previous  to
+http://127.0.0.1:8000/sites using  the POST  http-method, as with  the following
+example:
+
+#+BEGIN_src shell
+curl -H "Content-Type: application/json" -X POST -d '{"user_id":"1","site_id":"1", "software_id": 3, "name": "MyHadoopCluster"}' http://localhost:8000/clusters/
+#+END_src
+
+You should get something like:
+
+#+BEGIN_src shell
+{"cluster_id":2}
+#+END_src
+
+Please note that the web service gives you hints when a request is misformed:
+
+#+BEGIN_src shell
+curl -H "Content-Type: application/json" -X POST -d '{"user_id":"1","site_id":"1"}' http://localhost:8000/clusters/
+#+END_src
+
+reuslts in:
+
+#+BEGIN_src shell
+{"missing_fields":["software_id","name"]}
+#+END_src
+
+In general  you can  get information on  a request by  sending request  with the
+*OPTIONS* HTTP method:
+
+#+BEGIN_src shell
+curl  -X OPTIONS http://localhost:8000/clusters/
+#+END_src
+
+reuslts in:
+
+#+BEGIN_src shell
+{"name":"Cluster List","description":"List all clusters, or create a new cluster.","renders":["application/json","text/html"],"parses":["application/json","application/x-www-form-urlencoded","multipart/form-data"]}
+#+END_src
+
+*** Adding nodes to the Hadoop cluster
+
+You  can   add  a   node  to  the   cluster  by  sending   a  POST   request  to
+http://localhost:8000/hosts/  containing a  JSON  dict that  has a  "cluster_id"
+value:
+
+#+BEGIN_src shell
+curl -H "Content-Type: application/json" -X POST -d '{"cluster_id":"1"}' http://localhost:8000/hosts/
+#+END_src
+
+After 30 seconds, the command should return something like that:
+
+#+BEGIN_src shell
+{"host_id":1}
+#+END_src
+
+Accessing the  Chameleon dashboard shows that  there is a new  instance has been
+spawned:
+
+[[./docs/chameleon_hadoop_dashboard.png]]
+
+and accessing http://129.114.111.66:50070/ enables to get the following page:
+[[./docs/hadoop_dashboard_1.png]]
+
+
+Let's add now a secondary hadoop node, with "babar" as a name:
+
+#+BEGIN_src shell
+curl -H "Content-Type: application/json" -X POST -d '{"cluster_id":"1", "name": "babar"}' http://localhost:8000/hosts/
+#+END_src
+
+After 30 seconds, the command should return something like that:
+[[./docs/hadoop_dashboard_2.png]]
+
+** Classes accessibles from API
+
+The following diagram illustrates classes that can be manipulated by the API.
+
+[[./docs/classes.png]]
+
+*** User
+
+| URL         | HTTP Method | Action            | Supported | Comment |
+|-------------+-------------+-------------------+-----------+---------|
+| /users/     | GET         | list all users    | Yes       |         |
+| /users/     | POST        | add a new user    | Yes       |         |
+| /users/[id] | GET         | details of a user | Yes       |         |
+| /users/[id] | PUT         | update a user     | Yes       |         |
+| /users/[id] | DELETE      | delete a user     | Yes       |         |
+
+*** Site
+
+| URL         | HTTP Method | Action            | Supported | Comment |
+|-------------+-------------+-------------------+-----------+---------|
+| /sites/     | GET         | list all   sites  | Yes       |         |
+| /sites/     | POST        | add a new site    | Yes       |         |
+| /sites/[id] | GET         | details of a site | Yes       |         |
+| /sites/[id] | PUT         | update a site     | Yes       |         |
+| /sites/[id] | DELETE      | delete a site     | Yes       |         |
+
+*** Cluster
+
+| URL            | HTTP Method | Action               | Supported | Comment                    |
+|----------------+-------------+----------------------+-----------+----------------------------|
+| /clusters/     | GET         | list all clusters    | Yes       |                            |
+| /clusters/     | POST        | add a new cluster    | Yes       |                            |
+| /clusters/[id] | GET         | details of a cluster | Yes       |                            |
+| /clusters/[id] | PUT         | update a cluster     | Yes       |                            |
+| /clusters/[id] | DELETE      | delete a cluster     | No        | Don't delete instances yet |
+
+*** Host
+
+| URL         | HTTP Method | Action            | Supported | Comment                          |
+|-------------+-------------+-------------------+-----------+----------------------------------|
+| /hosts/     | GET         | list all  hosts   | Yes       |                                  |
+| /hosts/     | POST        | add a new host    | Yes       |                                  |
+| /hosts/[id] | GET         | details of a host | Yes       |                                  |
+| /hosts/[id] | PUT         | update a host     | Yes       |                                  |
+| /hosts/[id] | DELETE      | delete a host     | No        | Don't delete the linked instance |
+
+*** Software
+
+| URL             | HTTP Method | Action                | Supported | Comment |
+|-----------------+-------------+-----------------------+-----------+---------|
+| /softwares/     | GET         | list all softwares    | Yes       |         |
+| /softwares/     | POST        | add a new software    | Yes       |         |
+| /softwares/[id] | GET         | details of a software | Yes       |         |
+| /softwares/[id] | PUT         | update a software     | Yes       |         |
+| /softwares/[id] | DELETE      | delete a software     | Yes       |         |
+
+** Architecture
+[[./docs/architecture.png]]
+** Contact
+
+jpastor@uchicago.edu
