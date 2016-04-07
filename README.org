@@ -57,11 +57,6 @@ Starting development server at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 #+END_src
 
-*** Initialise data
-
-Data will be initialised at you first interaction with the API. For this just to
-a simple request like accessing "http://127.0.0.1:8000/sites"
-
 ** Accessing the API
 *** Browser
 Accessing the  "http://127.0.0.1:8000/sites" in  a browser  should lead  to the
@@ -91,139 +86,16 @@ it leads to the following ouput:
 [{"id":1,"name":"KVM@TACC","os_auth_url":"https://openstack.tacc.chameleoncloud.org:5000/v2.0","cluster_ids":[]}]
 #+END_src
 
-** Creating an Hadoop cluster on the KVM Chameleon Cloud
-*** Get the ID of KVM Chameleon infrastructure
+** Creating an Hadoop job
+*** Send files to the remote filesystem
 
-To get all the sites available, run the following command:
+curl -H "Content-Type: application/json" -X POST -d '{"name":"myfile.txt"}' http://localhost:8000/files
 
-#+BEGIN_src shell
-curl http://127.0.0.1:8000/sites
-#+END_src
+curl -i -X POST -F 'data=@vanilla.js' http://localhost:8000/set_file_content/1/
 
-We get this:
+curl -i -X POST  http://localhost:8000/put_local_file_to_hdfs/1/hdfsmyfile/
 
-#+BEGIN_src shell
-[{"id":1,"name":"KVM@TACC","os_auth_url":"https://openstack.tacc.chameleoncloud.org:5000/v2.0","cluster_ids":[]}]
-#+END_src
-
-It means that we have to use *1* as a cluster_id.
-
-*** Get the ID of Hadoop
-
-To list available softwares, run the following command:
-
-#+BEGIN_src shell
-curl http://127.0.0.1:8000/softwares/
-#+END_src
-
-We get this:
-
-#+BEGIN_src shell
-[{"id":1,"name":"mongodb","cluster_ids":[],"script_ids":[1,2,3,4]},{"id":2,"name":"common","cluster_ids":[],"script_ids":[5]},{"id":3,"name":"hadoop","cluster_ids":[],"script_ids":[6,7,8,9]}]
-#+END_src
-
-It means that we have to use *3* as a software_id.
-
-*** Get the ID of User
-
-To list available users (there should be only one user in the database), run the
-following command:
-
-#+BEGIN_src shell
-curl http://127.0.0.1:8000/users/
-#+END_src
-
-We get this:
-
-#+BEGIN_src shell
-[{"id":1,"username":"jpastor","password":"XXXXXXXXXXX","project":"FG-392","cluster_ids":[]}]
-#+END_src
-
-It means that we have to use *1* as a user_id.
-
-*** Create the Hadoop cluster
-
-We will create a cluster that will be associated to the following data:
-
-| Data type      | Data value        | id |
-|----------------+-------------------+----|
-| Infrastructure | KVM@ChameleonTACC |  1 |
-| Software       | Hadoop            |  3 |
-| User           | jpastor           |  1 |
-| Cluster name   | MyHadoopCluster   | NA |
-
-To  do  so,  you   have  to  send  a  JSON  dict   containing  the  previous  to
-http://127.0.0.1:8000/sites using  the POST  http-method, as with  the following
-example:
-
-#+BEGIN_src shell
-curl -H "Content-Type: application/json" -X POST -d '{"user_id":"1","site_id":"1", "software_id": 3, "name": "MyHadoopCluster"}' http://localhost:8000/clusters/
-#+END_src
-
-You should get something like:
-
-#+BEGIN_src shell
-{"cluster_id":2}
-#+END_src
-
-Please note that the web service gives you hints when a request is misformed:
-
-#+BEGIN_src shell
-curl -H "Content-Type: application/json" -X POST -d '{"user_id":"1","site_id":"1"}' http://localhost:8000/clusters/
-#+END_src
-
-reuslts in:
-
-#+BEGIN_src shell
-{"missing_fields":["software_id","name"]}
-#+END_src
-
-In general  you can  get information on  a request by  sending request  with the
-*OPTIONS* HTTP method:
-
-#+BEGIN_src shell
-curl  -X OPTIONS http://localhost:8000/clusters/
-#+END_src
-
-reuslts in:
-
-#+BEGIN_src shell
-{"name":"Cluster List","description":"List all clusters, or create a new cluster.","renders":["application/json","text/html"],"parses":["application/json","application/x-www-form-urlencoded","multipart/form-data"]}
-#+END_src
-
-*** Adding nodes to the Hadoop cluster
-
-You  can   add  a   node  to  the   cluster  by  sending   a  POST   request  to
-http://localhost:8000/hosts/  containing a  JSON  dict that  has a  "cluster_id"
-value:
-
-#+BEGIN_src shell
-curl -H "Content-Type: application/json" -X POST -d '{"cluster_id":"1"}' http://localhost:8000/hosts/
-#+END_src
-
-After 30 seconds, the command should return something like that:
-
-#+BEGIN_src shell
-{"host_id":1}
-#+END_src
-
-Accessing the  Chameleon dashboard shows that  there is a new  instance has been
-spawned:
-
-[[./docs/chameleon_hadoop_dashboard.png]]
-
-and accessing http://129.114.111.66:50070/ enables to get the following page:
-[[./docs/hadoop_dashboard_1.png]]
-
-
-Let's add now a secondary hadoop node, with "babar" as a name:
-
-#+BEGIN_src shell
-curl -H "Content-Type: application/json" -X POST -d '{"cluster_id":"1", "name": "babar"}' http://localhost:8000/hosts/
-#+END_src
-
-After 30 seconds, the command should return something like that:
-[[./docs/hadoop_dashboard_2.png]]
+*** Create and run an Hadoop job
 
 ** Classes accessibles from API
 

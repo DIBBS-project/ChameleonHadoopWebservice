@@ -11,31 +11,16 @@ urlpatterns = patterns('',
     url(r'^index/',  views.index, name='index'),
     url(r'^$',  views.index, name='index'),
 
-    # Users
-    url(r'^users/?$', views.user_list),
-    url(r'^users/(?P<pk>[0-9]+)/$', views.user_detail),
+    # Files
+    url(r'^files/?$', views.file_list),
+    url(r'^set_file_content/(?P<pk>[0-9]+)/$', views.set_file_content),
+    url(r'^put_local_file_to_hdfs/(?P<pk>[0-9]+)/(?P<hn>[0-9a-zA-Z]+)/$', views.put_local_file_to_hdfs),
+    url(r'^pull_from_hdfs/(?P<pk>[0-9]+)/$', views.pull_from_hdfs),
+    url(r'^download_file/(?P<pk>[0-9]+)/$', views.download_file),
+    url(r'^set_file_content/(?P<pk>[0-9]+)/$', views.set_file_content),
+    url(r'^files/(?P<pk>[0-9]+)/$', views.file_detail),
 
-    # Sites
-    url(r'^sites/?$', views.site_list),
-    url(r'^sites/(?P<pk>[0-9]+)/$', views.site_detail),
-
-    # Clusters
-    url(r'^clusters/?$', views.cluster_list),
-    url(r'^clusters/(?P<pk>[0-9]+)/$', views.cluster_detail),
-
-    # Hosts
-    url(r'^hosts/?$', views.host_list),
-    url(r'^hosts/(?P<pk>[0-9]+)/$', views.host_detail),
-
-    # Softwares
-    url(r'^softwares/?$', views.software_list),
-    url(r'^softwares/(?P<pk>[0-9]+)/$', views.software_detail),
-
-    # Scripts
-    url(r'^scripts/?$', views.script_list),
-    url(r'^scripts/(?P<pk>[0-9]+)/$', views.script_detail),
-
-    # Events
-    url(r'^events/?$', views.event_list),
-    url(r'^events/(?P<pk>[0-9]+)/$', views.event_detail),
+    # Jobs
+    url(r'^jobs/?$', views.job_list),
+    url(r'^jobs/(?P<pk>[0-9]+)/$', views.job_detail),
 )

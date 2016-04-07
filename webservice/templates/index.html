@@ -3,8 +3,8 @@
         <title>Index</title>
     </head>
     <body>
-    {% for cluster in clusters %}
-        <h1>{{ cluster.name }} on {{ cluster.site }}</h1>
+    {% for file in files %}
+        <h1>{{ file.name }} created_at {{ file.created_at }}</h1>
     {% endfor %}
     </body>
 </html>

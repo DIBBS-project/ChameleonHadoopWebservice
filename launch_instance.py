@@ -4,7 +4,7 @@ import logging
 import os
 import sys
 
-from core.mister_cluster import MisterCluster
+from core.mister_hadoop import MisterHadoop
 from novaclient.v2 import client
 
 logging.basicConfig(level=logging.INFO)
@@ -36,7 +36,7 @@ client = None
 def listenToRequest(nova_client):
     print "Listening to Requests ..."
     first_instance = True
-    mister_cluster = MisterCluster(nova_client)
+    mister_cluster = MisterHadoop(nova_client)
     while True:
         char = sys.stdin.read(1)
         request = {
