@@ -77,13 +77,9 @@ def pull_from_hdfs(request, pk):
     if request.method == 'GET' or True:
         # Find the DB file
         file = File.objects.filter(id=pk).first()
-        # Download the local file
-        response = HttpResponse(mimetype='application/force-download')
-        response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(file.local_file_path)
-        response['X-Sendfile'] = smart_str(file.local_file_path)
-        # It's usually a good idea to set the 'Content-Length' header too.
-        # You can also set any other required headers: Cache-Control, etc.
-        return response
+        # Pull from HDFS to local_path
+        mister_hadoop.collect_file_from_hdfs(file.hdfs_name, file.local_file_path)
+        return Response({"status": "ok"}, status=201)
 
 
 @api_view(['GET'])
@@ -93,12 +89,14 @@ def download_file(request, pk):
         # Find the DB file
         file = File.objects.filter(id=pk).first()
         # Download the local file
-        response = HttpResponse(mimetype='application/force-download')
-        response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(file.local_file_path)
+        data = mister_fs.load_file(file.local_file_path)
+        response = HttpResponse(data)
+        response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(file.name)
         response['X-Sendfile'] = smart_str(file.local_file_path)
         # It's usually a good idea to set the 'Content-Length' header too.
         # You can also set any other required headers: Cache-Control, etc.
         return response
+
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @csrf_exempt
