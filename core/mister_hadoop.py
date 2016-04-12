@@ -43,7 +43,7 @@ class MisterHadoop:
             "local_path": local_path
         }
         generate_template_file(input_file, output_file, context)
-        subprocess.call(output_file, shell=True)
+        subprocess.call("bash %s" % (output_file), shell=True)
         pass
 
     def run_job(self, jar_file, parameters):
@@ -54,7 +54,7 @@ class MisterHadoop:
             "parameters": parameters
         }
         generate_template_file(input_file, output_file, context)
-        subprocess.call(output_file, shell=True)
+        subprocess.call("bash %s" % (output_file), shell=True)
         pass
 
     def collect_file_from_hdfs(self, hdfs_name, local_path):
@@ -65,7 +65,7 @@ class MisterHadoop:
             "output_file": output_file
         }
         generate_template_file(input_file, output_file, context)
-        subprocess.call(output_file, shell=True)
+        subprocess.call("bash %s" % (output_file), shell=True)
         pass
 
 if __name__ == "__main__":
