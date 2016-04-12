@@ -23,4 +23,5 @@ urlpatterns = patterns('',
     # Jobs
     url(r'^jobs/?$', views.job_list),
     url(r'^jobs/(?P<pk>[0-9]+)/$', views.job_detail),
+    url(r'^run_hadoop_job/(?P<pk>[0-9]+)/$', views.run_hadoop_job),
 )

@@ -83,7 +83,7 @@ curl -i -X POST -F 'data=@test.txt' $REMOTE_HADOOP_WEBSERVICE_HOST/set_file_cont
 curl -i -X POST  $REMOTE_HADOOP_WEBSERVICE_HOST/put_local_file_to_hdfs/$TEST_TXT_ID/input/
 
 # Create Hadoop job
-HADOOP_JOB_CREATION_OUTPUT=$(curl -H "Content-Type: application/json" -X POST -d "{\"name\": \"test\", \"file_id\": $TEST_JAR_ID}" $REMOTE_HADOOP_WEBSERVICE_HOST/jobs)
+HADOOP_JOB_CREATION_OUTPUT=$(curl -H "Content-Type: application/json" -X POST -d "{\"name\": \"test\", \"file_id\": $TEST_JAR_ID, \"parameters\": \"input output dummyparameter\"}" $REMOTE_HADOOP_WEBSERVICE_HOST/jobs)
 HADOOP_JOB_ID=$(extract_id $TEST_JAR_CREATION_OUTPUT)
 
 # Run "test.jar" with hadoop

@@ -178,6 +178,19 @@ def job_detail(request, pk):
         site.delete()
         return HttpResponse(status=204)
 
+@api_view(['GET'])
+@csrf_exempt
+def run_hadoop_job(request, pk):
+    if request.method == 'GET' or True:
+        # Find the Hadoop job
+        job = Job.objects.filter(id=pk).first()
+        # Get the corresponding file
+        jar_path = job.file.local_file_path
+
+        mister_hadoop.run_job(jar_path, job.parameters)
+
+        return Response({"status": "ok"}, status=200)
+
 
 if len(File.objects.all()) == 0 and len(Job.objects.all()) == 0:
     from webservice.fixtures import create_data
