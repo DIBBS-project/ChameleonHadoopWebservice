@@ -89,11 +89,14 @@ it leads to the following ouput:
 ** Creating an Hadoop job
 *** Send files to the remote filesystem
 
+
+#+BEGIN_src shell
 curl -H "Content-Type: application/json" -X POST -d '{"name":"myfile.txt"}' http://localhost:8000/files
 
 curl -i -X POST -F 'data=@vanilla.js' http://localhost:8000/set_file_content/1/
 
 curl -i -X POST  http://localhost:8000/put_local_file_to_hdfs/1/hdfsmyfile/
+#+END_src
 
 *** Create and run an Hadoop job
 
