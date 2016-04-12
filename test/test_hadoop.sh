@@ -4,7 +4,7 @@ REMOTE_HADOOP_WEBSERVICE_HOST="http://129.114.111.66:8000"
 
 function extract_id {
 
-    RESULT=$(echo $1 | sed 's/.*id"://g' | sed 's/,.*//g')
+    RESULT=$(echo $1 | sed 's/.*"id"://g' | sed 's/,.*//g')
 
     echo "$RESULT"
 }
@@ -84,10 +84,14 @@ curl -i -X POST  $REMOTE_HADOOP_WEBSERVICE_HOST/put_local_file_to_hdfs/$TEST_TXT
 
 # Create Hadoop job
 HADOOP_JOB_CREATION_OUTPUT=$(curl -H "Content-Type: application/json" -X POST -d "{\"name\": \"test\", \"file_id\": $TEST_JAR_ID, \"parameters\": \"input output dummyparameter\"}" $REMOTE_HADOOP_WEBSERVICE_HOST/jobs)
-HADOOP_JOB_ID=$(extract_id $TEST_JAR_CREATION_OUTPUT)
+HADOOP_JOB_ID=$(extract_id $HADOOP_JOB_CREATION_OUTPUT)
+echo "HADOOP_JOB_ID: $HADOOP_JOB_ID"
 
 # Run "test.jar" with hadoop
 curl -i -X POST  $REMOTE_HADOOP_WEBSERVICE_HOST/put_local_file_to_hdfs/$TEST_TXT_ID/input/
+curl -i -X GET  $REMOTE_HADOOP_WEBSERVICE_HOST/run_hadoop_job/$HADOOP_JOB_ID/
+
+sleep 30
 
 # Collect result files: "output" located in HDFS will be copied to the "output.txt" file
 curl -H "Content-Type: application/json" -X GET $REMOTE_HADOOP_WEBSERVICE_HOST/pull_from_hdfs/$OUTPUT_TXT_ID/
