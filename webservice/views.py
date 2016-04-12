@@ -24,7 +24,7 @@ def index(request):
 mister_hadoop = MisterHadoop()
 mister_fs = MisterFs()
 
-# Methods related to User
+# Methods related to File
 @api_view(['GET', 'POST'])
 @csrf_exempt
 def file_list(request):
@@ -130,7 +130,7 @@ def file_detail(request, pk):
         return HttpResponse(status=204)
 
 
-# Methods related to Site
+# Methods related to Jobs
 @api_view(['GET', 'POST'])
 @csrf_exempt
 def job_list(request):
@@ -176,6 +176,59 @@ def job_detail(request, pk):
 
     elif request.method == 'DELETE':
         site.delete()
+        return HttpResponse(status=204)
+
+
+# Methods related to HDFS Files
+@api_view(['GET', 'POST'])
+@csrf_exempt
+def hdfs_file_list(request):
+    """
+    List all files, or create a new file.
+    """
+    if request.method == 'GET':
+        users = File.objects.all()
+        serializer = FileSerializer(users, many=True)
+        # for result in serializer.data:
+        #     result["password"] = "*" * len(result["password"])
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = FileSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@csrf_exempt
+def hdfs_file_detail(request, pk):
+    """
+    Retrieve, update or delete an user.
+    """
+    try:
+        file = File.objects.get(pk=pk)
+    except File.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        file.password = "*" * len(file.password)
+        serializer = FileSerializer(file)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = FileSerializer(file, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            # user.password = "*" * len(user.password)
+            serializer = FileSerializer(file, data=data)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        file.delete()
         return HttpResponse(status=204)
 
 @api_view(['GET'])

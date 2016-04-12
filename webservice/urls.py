@@ -20,6 +20,10 @@ urlpatterns = patterns('',
     url(r'^pull_from_hdfs/(?P<pk>[0-9]+)/$', views.pull_from_hdfs),
     url(r'^download_file/(?P<pk>[0-9]+)/$', views.download_file),
 
+    # HDFS Files
+    url(r'^hdfs_files/?$', views.hdfs_file_list),
+    url(r'^hdfs_files/(?P<pk>[0-9]+)/$', views.hdfs_file_detail),
+
     # Jobs
     url(r'^jobs/?$', views.job_list),
     url(r'^jobs/(?P<pk>[0-9]+)/$', views.job_detail),
