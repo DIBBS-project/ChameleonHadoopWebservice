@@ -50,6 +50,15 @@ curl -H "Content-Type: application/json" -X DELETE $REMOTE_HADOOP_WEBSERVICE_HOS
 curl -H "Content-Type: application/json" -X DELETE $REMOTE_HADOOP_WEBSERVICE_HOST/files/38
 curl -H "Content-Type: application/json" -X DELETE $REMOTE_HADOOP_WEBSERVICE_HOST/files/39/
 
+
+curl -H "Content-Type: application/json" -X DELETE $REMOTE_HADOOP_WEBSERVICE_HOST/jobs/1/
+curl -H "Content-Type: application/json" -X DELETE $REMOTE_HADOOP_WEBSERVICE_HOST/jobs/2/
+curl -H "Content-Type: application/json" -X DELETE $REMOTE_HADOOP_WEBSERVICE_HOST/jobs/3/
+curl -H "Content-Type: application/json" -X DELETE $REMOTE_HADOOP_WEBSERVICE_HOST/jobs/4/
+curl -H "Content-Type: application/json" -X DELETE $REMOTE_HADOOP_WEBSERVICE_HOST/jobs/5/
+curl -H "Content-Type: application/json" -X DELETE $REMOTE_HADOOP_WEBSERVICE_HOST/jobs/6/
+curl -H "Content-Type: application/json" -X DELETE $REMOTE_HADOOP_WEBSERVICE_HOST/jobs/7/
+curl -H "Content-Type: application/json" -X DELETE $REMOTE_HADOOP_WEBSERVICE_HOST/jobs/8/
 #exit 0
 
 # CREATE_FILE
@@ -74,7 +83,7 @@ curl -i -X POST -F 'data=@test.txt' $REMOTE_HADOOP_WEBSERVICE_HOST/set_file_cont
 curl -i -X POST  $REMOTE_HADOOP_WEBSERVICE_HOST/put_local_file_to_hdfs/$TEST_TXT_ID/input/
 
 # Create Hadoop job
-HADOOP_JOB_CREATION_OUTPUT=$(curl -H "Content-Type: application/json" -X POST -d "{\"name\": \"test\", \"file_id\": $TEST_JAR_ID$}" $REMOTE_HADOOP_WEBSERVICE_HOST/jobs)
+HADOOP_JOB_CREATION_OUTPUT=$(curl -H "Content-Type: application/json" -X POST -d "{\"name\": \"test\", \"file_id\": $TEST_JAR_ID}" $REMOTE_HADOOP_WEBSERVICE_HOST/jobs)
 HADOOP_JOB_ID=$(extract_id $TEST_JAR_CREATION_OUTPUT)
 
 # Run "test.jar" with hadoop

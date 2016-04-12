@@ -19,3 +19,4 @@ class Job(models.Model):
     # start_date = models.DateTimeField(auto_now_add=True)
     file = models.ForeignKey(File, to_field='id')
     status = models.CharField(max_length=100, blank=False, default="created")
+    parameters = models.TextField(blank=True, default="")

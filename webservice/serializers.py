@@ -36,21 +36,23 @@ class JobSerializer(serializers.Serializer):
     # start_date = serializers.DateField()
     file_id = serializers.IntegerField()
     status = serializers.CharField(max_length=100, allow_blank=False, default='')
+    parameters = serializers.CharField(allow_blank=True, default='')
 
     def create(self, validated_data):
         """
-        Create and return a new `Site` instance, given the validated data.
+        Create and return a new `Job` instance, given the validated data.
         """
         return Job.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
         """
-        Update and return an existing `Site` instance, given the validated data.
+        Update and return an existing `Job` instance, given the validated data.
         """
         instance.name = validated_data.get('name', instance.name)
         # instance.start_date = validated_data.get('start_date', instance.start_date)
         instance.file_id = validated_data.get('file_id', instance.file_id)
         instance.status = validated_data.get('status', instance.status)
+        instance.parameters = validated_data.get('parameters', instance.status)
 
         if instance.file_id:
             instance.save()
