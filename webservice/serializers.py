@@ -5,7 +5,7 @@ import uuid
 class FileSerializer(serializers.Serializer):
     id = serializers.IntegerField(label='ID', read_only=True)
     name = serializers.CharField(max_length=100, allow_blank=False, default="%s" % (uuid.uuid4()))
-    hdfs_name = serializers.CharField(max_length=100, allow_blank=False, default="")
+    hdfs_name = serializers.CharField(max_length=100, allow_blank=False, default="%s" % (uuid.uuid4()))
     local_file_path = serializers.CharField(max_length=100, allow_blank=False, default="%s" % (uuid.uuid4()))
 
     def create(self, validated_data):
