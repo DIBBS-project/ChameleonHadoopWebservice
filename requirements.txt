@@ -6,3 +6,4 @@ jinja2
 python-novaclient
 django-secure
 django-sslserver
+pycurl
