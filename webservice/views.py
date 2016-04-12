@@ -15,6 +15,7 @@ from core.mister_fs import MisterFs
 
 from django.utils.encoding import smart_str
 
+
 def index(request):
     files = File.objects.all()
     return render(request, "index.html", {"files": files})

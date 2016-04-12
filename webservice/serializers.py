@@ -2,6 +2,7 @@ from rest_framework import serializers
 from webservice.models import File, Job
 import uuid
 
+
 class FileSerializer(serializers.Serializer):
     id = serializers.IntegerField(label='ID', read_only=True)
     name = serializers.CharField(max_length=100, allow_blank=False, default="%s" % (uuid.uuid4()))
