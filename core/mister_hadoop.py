@@ -66,6 +66,9 @@ class MisterHadoop:
         }
         generate_template_file(input_file, output_file, context)
         subprocess.call("bash %s" % (output_file), shell=True)
+
+
+
         pass
 
 if __name__ == "__main__":

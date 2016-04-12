@@ -105,27 +105,27 @@ def file_detail(request, pk):
     Retrieve, update or delete an user.
     """
     try:
-        user = File.objects.get(pk=pk)
+        file = File.objects.get(pk=pk)
     except File.DoesNotExist:
         return HttpResponse(status=404)
 
     if request.method == 'GET':
-        user.password = "*" * len(user.password)
-        serializer = FileSerializer(user)
+        file.password = "*" * len(file.password)
+        serializer = FileSerializer(file)
         return Response(serializer.data)
 
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
-        serializer = FileSerializer(user, data=data)
+        serializer = FileSerializer(file, data=data)
         if serializer.is_valid():
             serializer.save()
             # user.password = "*" * len(user.password)
-            serializer = FileSerializer(user, data=data)
+            serializer = FileSerializer(file, data=data)
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
 
     elif request.method == 'DELETE':
-        user.delete()
+        file.delete()
         return HttpResponse(status=204)
 
 
