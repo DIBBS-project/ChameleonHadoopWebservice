@@ -3,11 +3,15 @@ from webservice.models import File, Job
 import uuid
 
 
+def generate_uuid():
+    return "%s" % (uuid.uuid4())
+
+
 class FileSerializer(serializers.Serializer):
     id = serializers.IntegerField(label='ID', read_only=True)
-    name = serializers.CharField(max_length=100, allow_blank=False, default="%s" % (uuid.uuid4()))
-    hdfs_name = serializers.CharField(max_length=100, allow_blank=False, default="%s" % (uuid.uuid4()))
-    local_file_path = serializers.CharField(max_length=100, allow_blank=False, default="%s" % (uuid.uuid4()))
+    name = serializers.CharField(max_length=100, allow_blank=False, default=generate_uuid)
+    hdfs_name = serializers.CharField(max_length=100, allow_blank=False, default=generate_uuid)
+    local_file_path = serializers.CharField(max_length=100, allow_blank=False, default=generate_uuid)
 
     def create(self, validated_data):
         """
