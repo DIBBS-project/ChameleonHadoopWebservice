@@ -67,7 +67,7 @@ def put_local_file_to_hdfs(request, pk, hn):
         file.hdfs_name = hn
         file.save()
         # Put the file on HDFS
-        mister_hadoop.add_local_file_to_hdfs(file.name, file.local_file_path)
+        mister_hadoop.add_local_file_to_hdfs(file.hdfs_name, file.local_file_path)
         return Response({"status": "ok"}, status=201)
 
 
