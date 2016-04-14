@@ -64,7 +64,7 @@ class MisterHadoop:
 
     def __init__(self, parameters=None):
         self.server_ip = "127.0.0.1"
-        self.url_postfix = "http://%s:50070/webhdfs/v1" % (self.server_ip)
+        self.url_postfix = "http://%s:8088/ws/v1" % (self.server_ip)
 
     def call_whdfs(self, action, http_method):
         return call_rest("%s/%s" % (self.url_postfix, action), http_method)
