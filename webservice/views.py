@@ -91,13 +91,10 @@ def download_file(request, pk):
     if request.method == 'GET' or True:
         # Find the DB file
         file = File.objects.filter(id=pk).first()
-        # Download the local file
         data = mister_fs.load_file(file.local_file_path)
         response = HttpResponse(data)
         response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(file.name)
         response['X-Sendfile'] = smart_str(file.local_file_path)
-        # It's usually a good idea to set the 'Content-Length' header too.
-        # You can also set any other required headers: Cache-Control, etc.
         return response
 
 
@@ -202,27 +199,21 @@ def job_detail(request, pk):
 
 @api_view(['GET', 'DELETE'])
 @csrf_exempt
-def hdfs_file_detail(request, path):
+def hdfs_file_detail(request, path=None):
     """
-    Retrieve, update or delete an user.
+    Retrieve, update or delete an HDFS file.
     """
-    # try:
-    #     file = File.objects.get(pk=pk)
-    # except File.DoesNotExist:
-    #     return HttpResponse(status=404)
+
+    if path is None:
+        path = ""
 
     if request.method == 'GET':
-        return mister_hdfs.list_files(path)
+        files = mister_hdfs.list_files(path)
+        return Response(files)
 
-    # elif request.method == 'PUT':
-    #     data = JSONParser().parse(request)
-    #     serializer = FileSerializer(file, data=data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         # user.password = "*" * len(user.password)
-    #         serializer = FileSerializer(file, data=data)
-    #         return Response(serializer.data)
-    #     return Response(serializer.errors, status=400)
+    if request.method == 'DELETE':
+        files = mister_hdfs.delete_file(path)
+        return Response(files)
 
     elif request.method == 'DELETE':
         file.delete()
@@ -230,16 +221,24 @@ def hdfs_file_detail(request, path):
 
 @api_view(['GET', 'DELETE'])
 @csrf_exempt
-def pull_hdfs_file(request, hdfspath, localpath):
+def download_hdfs_file(request, hdfspath):
     """
     Retrieve, update or delete an user.
     """
-    # try:
-    #     file = File.objects.get(pk=pk)
-    # except File.DoesNotExist:
-    #     return HttpResponse(status=404)
 
     if request.method == 'GET':
+        import uuid
+        random_filename = str(uuid.uuid4())
+        filename = hdfspath.split("/")[0]
+
+        mister_hadoop.collect_file_from_hdfs(hdfspath, random_filename)
+
+        data = mister_fs.load_file(random_filename)
+        response = HttpResponse(data)
+        response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(filename)
+        response['X-Sendfile'] = smart_str(filename)
+        return response
+
         return mister_hdfs.list_files(hdfspath)
 
     # elif request.method == 'PUT':

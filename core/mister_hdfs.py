@@ -41,15 +41,15 @@ def call_rest(url, method="GET"):
     data = BytesIO()
 
     if method == "GET":
-        c.setopt(c.GET, 1)
+        c.setopt(c.HTTPGET, 1)
     elif method == "POST":
-        c.setopt(c.POST, 1)
+        c.setopt(c.HTTPPOST, 1)
     elif method == "PUT":
-        c.setopt(c.PUT, 1)
+        c.setopt(c.HTTPPUT, 1)
     elif method == "DELETE":
-        c.setopt(c.DELETE, 1)
+        c.setopt(c.HTTPDELETE, 1)
     elif method == "PATCH":
-        c.setopt(c.PATCH, 1)
+        c.setopt(c.HTTPPATCH, 1)
 
     c.setopt(c.URL, url)
     c.setopt(c.WRITEFUNCTION, data.write)
@@ -61,49 +61,21 @@ def call_rest(url, method="GET"):
 class MisterHdfs:
 
     def __init__(self, path=None):
-        self.url_postfix = "http://127.0.0.1:50070/webhdfs/v1"
+        self.server_ip = "129.114.111.66"
+        self.url_postfix = "http://%s:50070/webhdfs/v1" % (self.server_ip)
 
-    def call_whdfs(self, hdfs_path, operation):
-        return call_rest("%s/%s?op=%s" % (self.url_postfix, hdfs_path, operation))
+    def call_whdfs(self, hdfs_path, operation, http_method):
+        return call_rest("%s/%s?op=%s" % (self.url_postfix, hdfs_path, operation), http_method)
 
     def list_files(self, hdfs_path):
-        return self.call_whdfs(hdfs_path, "GET")
+        return self.call_whdfs(hdfs_path, "LISTSTATUS", "GET")
 
-    def create_file(self, name, data):
-        # Delete file if it already exists
-        if self.file_exist(name):
-            self.delete_file(name)
-        # Write data in a new file
-        file_path = "%s/%s" % (self.path, name)
-        with open(file_path, "a") as f:
-            f.write(data)
-        return True
+    def delete_file(self, hdfs_path, is_folder=False):
+        operation = "DELETE"
+        if is_folder:
+            operation += "&recursive=true"
+        return self.call_whdfs(hdfs_path, operation, "DELETE")
 
-    def load_file(self, name):
-        file_path = "%s/%s" % (self.path, name)
-        with open(file_path, "r") as content_file:
-            content = content_file.read()
-        return content
-
-    def file_exist(self, name):
-        return name in self.list_files()
-
-    def delete_file(self, name):
-        file_path = "%s/%s" % (self.path, name)
-        os.remove(file_path)
-        pass
-
-    def clean_folder(self):
-        for name in self.list_files():
-            self.delete_file(name)
 
 if __name__ == "__main__":
-    fs_manager = MisterHdfs()
-    print(fs_manager.list_files())
-    fs_manager.clean_folder()
-    print(fs_manager.list_files())
-    fs_manager.create_file("toto", "foo")
-    fs_manager.create_file("tata", "bar")
-    print(fs_manager.list_files())
-    for file_name in fs_manager.list_files():
-        print(fs_manager.load_file(file_name))
+    pass

@@ -68,8 +68,5 @@ class MisterHadoop:
         subprocess.call("bash %s" % (output_file), shell=True)
 
 
-
-        pass
-
 if __name__ == "__main__":
     pass
