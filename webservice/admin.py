@@ -1,5 +1,4 @@
 from django.contrib import admin
-from .models import File, Job
+from .models import Job
 
-admin.site.register(File)
 admin.site.register(Job)
