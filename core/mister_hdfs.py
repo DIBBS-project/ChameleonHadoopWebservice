@@ -46,7 +46,7 @@ def call_rest(url, method="GET"):
     elif method == "PUT":
         c.setopt(c.HTTPPUT, 1)
     elif method == "DELETE":
-        c.setopt(c.HTTPDELETE, 1)
+        c.setopt(pycurl.CUSTOMREQUEST, "DELETE")
     elif method == "PATCH":
         c.setopt(c.HTTPPATCH, 1)
 
