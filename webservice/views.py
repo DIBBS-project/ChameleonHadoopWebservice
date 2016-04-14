@@ -12,6 +12,7 @@ from rest_framework.response import Response
 
 from core.mister_hadoop import MisterHadoop
 from core.mister_fs import MisterFs
+from core.mister_hdfs import MisterHdfs
 
 from django.utils.encoding import smart_str
 
@@ -23,6 +24,7 @@ def index(request):
 
 mister_hadoop = MisterHadoop()
 mister_fs = MisterFs()
+mister_hdfs = MisterHdfs()
 
 # Methods related to File
 @api_view(['GET', 'POST'])
@@ -187,11 +189,8 @@ def hdfs_file_list(request):
     List all files, or create a new file.
     """
     if request.method == 'GET':
-        users = File.objects.all()
-        serializer = FileSerializer(users, many=True)
-        # for result in serializer.data:
-        #     result["password"] = "*" * len(result["password"])
-        return Response(serializer.data)
+        files = mister_hdfs.list_files()
+        return Response(files)
     elif request.method == 'POST':
         data = JSONParser().parse(request)
         serializer = FileSerializer(data=data)
