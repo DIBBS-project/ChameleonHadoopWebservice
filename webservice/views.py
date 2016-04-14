@@ -178,25 +178,6 @@ def job_detail(request, pk):
         return HttpResponse(status=204)
 
 
-# # Methods related to HDFS Files
-# @api_view(['GET'])
-# @csrf_exempt
-# def hdfs_file_list(request):
-#     """
-#     List all files, or create a new file.
-#     """
-#     if request.method == 'GET':
-#         files = mister_hdfs.list_files()
-#         return Response(files)
-#     elif request.method == 'POST':
-#         data = JSONParser().parse(request)
-#         serializer = FileSerializer(data=data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=201)
-#         return Response(serializer.errors, status=400)
-
-
 @api_view(['GET', 'DELETE'])
 @csrf_exempt
 def hdfs_file_detail(request, path=None):
@@ -208,7 +189,7 @@ def hdfs_file_detail(request, path=None):
         path = ""
 
     if request.method == 'GET':
-        files = mister_hdfs.list_files(path)
+        files = mister_hdfs.list_files(path)["FileStatuses"]["FileStatus"]
         return Response(files)
 
     if request.method == 'DELETE':
@@ -219,7 +200,8 @@ def hdfs_file_detail(request, path=None):
         file.delete()
         return HttpResponse(status=204)
 
-@api_view(['GET', 'DELETE'])
+
+@api_view(['GET'])
 @csrf_exempt
 def download_hdfs_file(request, hdfspath):
     """
@@ -231,8 +213,6 @@ def download_hdfs_file(request, hdfspath):
         random_filename = str(uuid.uuid4())
         filename = hdfspath.split("/")[-1]
 
-
-        print({"random_filename": random_filename, "filename": filename})
         mister_hadoop.collect_file_from_hdfs(hdfspath, random_filename)
 
         data = mister_fs.load_file(random_filename)
@@ -242,20 +222,6 @@ def download_hdfs_file(request, hdfspath):
         return response
 
         return mister_hdfs.list_files(hdfspath)
-
-    # elif request.method == 'PUT':
-    #     data = JSONParser().parse(request)
-    #     serializer = FileSerializer(file, data=data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         # user.password = "*" * len(user.password)
-    #         serializer = FileSerializer(file, data=data)
-    #         return Response(serializer.data)
-    #     return Response(serializer.errors, status=400)
-
-    elif request.method == 'DELETE':
-        file.delete()
-        return HttpResponse(status=204)
 
 
 @api_view(['GET'])
