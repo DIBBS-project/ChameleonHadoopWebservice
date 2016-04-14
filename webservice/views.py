@@ -28,6 +28,89 @@ mister_hdfs = MisterHdfs()
 
 
 ##############################
+# Hadoop
+##############################
+
+
+# Methods related to Jobs
+@api_view(['GET', 'POST'])
+@csrf_exempt
+def job_list(request):
+    """
+    List all code snippets, or create a new site.
+    """
+    if request.method == 'GET':
+        sites = Job.objects.all()
+        serializer = JobSerializer(sites, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = JobSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+@csrf_exempt
+def job_detail(request, pk):
+    """
+    Retrieve, update or delete a site.
+    """
+    try:
+        site = Job.objects.get(pk=pk)
+    except Job.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = JobSerializer(site)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = JobSerializer(site, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        site.delete()
+        return HttpResponse(status=204)
+
+
+@api_view(['GET'])
+@csrf_exempt
+def run_hadoop_job(request, pk):
+    if request.method == 'GET' or True:
+        # Find the Hadoop job
+        job = Job.objects.filter(id=pk).first()
+        mister_hadoop.run_job(job.command)
+
+        return Response({"status": "ok"}, status=200)
+
+
+@api_view(['GET'])
+@csrf_exempt
+def get_running_jobs(request):
+    """
+    Get runnin hadoop jobs.
+    """
+
+    if request.method == 'GET':
+        response = mister_hadoop.get_running_jobs()
+        jobs = response["apps"]["app"] if len(response) > 0 else []
+        return Response(jobs)
+
+
+if len(File.objects.all()) == 0 and len(Job.objects.all()) == 0:
+    from webservice.fixtures import create_data
+    create_data()
+
+
+##############################
 # FS
 ##############################
 
@@ -242,32 +325,3 @@ def upload_hdfs_file(request, hdfspath):
         # Put the file on HDFS
         mister_hadoop.add_local_file_to_hdfs(hdfspath, tmp_filename)
         return Response({"status": "ok"}, status=201)
-
-
-@api_view(['GET'])
-@csrf_exempt
-def run_hadoop_job(request, pk):
-    if request.method == 'GET' or True:
-        # Find the Hadoop job
-        job = Job.objects.filter(id=pk).first()
-        mister_hadoop.run_job(job.command)
-
-        return Response({"status": "ok"}, status=200)
-
-
-@api_view(['GET'])
-@csrf_exempt
-def get_running_jobs(request):
-    """
-    Get runnin hadoop jobs.
-    """
-
-    if request.method == 'GET':
-        response = mister_hadoop.get_running_jobs()
-        jobs = response["apps"]["app"] if len(response) > 0 else []
-        return Response(jobs)
-
-
-if len(File.objects.all()) == 0 and len(Job.objects.all()) == 0:
-    from webservice.fixtures import create_data
-    create_data()
