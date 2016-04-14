@@ -239,14 +239,14 @@ def download_hdfs_file(request, hdfspath):
         return mister_hdfs.list_files(hdfspath)
 
 
-@api_view(['PUT'])
+@api_view(['POST'])
 @csrf_exempt
 def upload_hdfs_file(request, hdfspath):
     """
     Retrieve, update or delete an user.
     """
 
-    if request.method == 'GET':
+    if request.method == 'POST':
 
         # Read content of the file
         file_content = request.data['data'].read()
