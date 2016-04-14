@@ -59,22 +59,25 @@ curl -H "Content-Type: application/json" -X DELETE $REMOTE_HADOOP_WEBSERVICE_HOS
 curl -H "Content-Type: application/json" -X DELETE $REMOTE_HADOOP_WEBSERVICE_HOST/jobs/6/
 curl -H "Content-Type: application/json" -X DELETE $REMOTE_HADOOP_WEBSERVICE_HOST/jobs/7/
 curl -H "Content-Type: application/json" -X DELETE $REMOTE_HADOOP_WEBSERVICE_HOST/jobs/8/
-#exit 0
 
-# CREATE_FILE
+
+# Clean HDFS folder used by this example
+curl -H "Content-Type: application/json" -X GET $REMOTE_HADOOP_WEBSERVICE_HOST/delete_hdfs_folder/user/root/
+
+# Upload test.jar and input.txt
 TEST_JAR_CREATION_OUTPUT=$(curl -H "Content-Type: application/json" -X POST -d '{"name": "test.jar"}' $REMOTE_HADOOP_WEBSERVICE_HOST/files)
 TEST_JAR_ID=$(extract_id $TEST_JAR_CREATION_OUTPUT)
 
 TEST_TXT_CREATION_OUTPUT=$(curl -H "Content-Type: application/json" -X POST $REMOTE_HADOOP_WEBSERVICE_HOST/user/root/)
 TEST_TXT_ID=$(extract_id $TEST_TXT_CREATION_OUTPUT)
 
-echo $TEST_JAR_IDxz
+echo $TEST_JAR_ID
 
 # Upload local files to the application
 curl -i -X POST -F 'data=@test.jar' $REMOTE_HADOOP_WEBSERVICE_HOST/set_file_content/$TEST_JAR_ID/
 
 # Copy test.txt to HDFS in the "input" file
-curl -i -X POST -F 'data=@test.txt' $REMOTE_HADOOP_WEBSERVICE_HOST/create_hdfs_folder/user/root/
+curl -i -X GET $REMOTE_HADOOP_WEBSERVICE_HOST/create_hdfs_folder/user/root/
 curl -i -X POST -F 'data=@test.txt' $REMOTE_HADOOP_WEBSERVICE_HOST/upload_hdfs_file/user/root/input/
 
 # Create Hadoop job

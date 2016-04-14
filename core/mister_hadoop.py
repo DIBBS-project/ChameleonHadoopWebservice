@@ -2,6 +2,9 @@
 
 import logging
 import os
+import pycurl
+import json
+from io import BytesIO
 
 logging.basicConfig(level=logging.INFO)
 import subprocess
@@ -30,10 +33,41 @@ def generate_template_file(input_file, output_file, context):
     return True
 
 
+def call_rest(url, method="GET"):
+    """ Inspired by:
+    http://stackoverflow.com/questions/15453608/extract-data-from-a-dictionary-returned-by-pycurl
+    """
+    c = pycurl.Curl()
+    data = BytesIO()
+
+    if method == "GET":
+        c.setopt(c.HTTPGET, 1)
+    elif method == "POST":
+        c.setopt(c.HTTPPOST, 1)
+    elif method == "PUT":
+        c.setopt(c.HTTPPUT, 1)
+    elif method == "DELETE":
+        c.setopt(pycurl.CUSTOMREQUEST, "DELETE")
+    elif method == "PATCH":
+        c.setopt(c.HTTPPATCH, 1)
+
+    print("c.setopt(c.URL, %s)" % (url))
+
+    c.setopt(c.URL, str(url))
+    c.setopt(c.WRITEFUNCTION, data.write)
+    c.perform()
+
+    return json.loads(data.getvalue())
+
+
 class MisterHadoop:
 
     def __init__(self, parameters=None):
-        pass
+        self.server_ip = "127.0.0.1"
+        self.url_postfix = "http://%s:50070/webhdfs/v1" % (self.server_ip)
+
+    def call_whdfs(self, action, http_method):
+        return call_rest("%s/%s" % (self.url_postfix, action), http_method)
 
     def add_local_file_to_hdfs(self, hdfs_path, local_path):
         input_file = "hadoop/add_local_file_to_hdfs.sh.jinja2"
@@ -56,7 +90,6 @@ class MisterHadoop:
         subprocess.call("bash %s" % (output_file), shell=True)
         pass
 
-
     def run_job(self, jar_file, parameters):
         input_file = "hadoop/run_job.sh.jinja2"
         output_file = "tmp/run_job.sh"
@@ -77,6 +110,9 @@ class MisterHadoop:
         }
         generate_template_file(input_file, output_file, context)
         subprocess.call("bash %s" % (output_file), shell=True)
+
+    def get_running_jobs(self):
+        return self.call_whdfs("cluster/apps", "GET")
 
 
 if __name__ == "__main__":

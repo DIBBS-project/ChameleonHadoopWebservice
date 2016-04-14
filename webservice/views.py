@@ -299,6 +299,22 @@ def run_hadoop_job(request, pk):
         return Response({"status": "ok"}, status=200)
 
 
+@api_view(['GET'])
+@csrf_exempt
+def get_running_jobs(request, path=None):
+    """
+    Get runnin hadoop jobs.
+    """
+
+    if request.method == 'GET':
+        response = mister_hadoop.get_running_jobs()
+        files = response["apps"]["app"] if len(response) > 0 else []
+        if len(files) == 1:
+            filename = path.split("/")[-1]
+            files[0]["pathSuffix"] = filename
+        return Response(files)
+
+
 if len(File.objects.all()) == 0 and len(Job.objects.all()) == 0:
     from webservice.fixtures import create_data
     create_data()
