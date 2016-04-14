@@ -78,7 +78,7 @@ class MisterFs:
 
     def create_folder(self, given_path):
         path = "%s/%s" % (self.path, given_path)
-        return os.mkdir(path)
+        return os.makedirs(path)
 
 
 if __name__ == "__main__":
