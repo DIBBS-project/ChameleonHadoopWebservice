@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from webservice.models import File, Job
+from webservice.models import Job
 from webservice.serializers import JobSerializer
 
 from django.views.decorators.csrf import csrf_exempt
