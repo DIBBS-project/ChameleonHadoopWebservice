@@ -3,7 +3,6 @@
 import logging
 import os
 import pycurl
-import pprint
 import json
 from io import BytesIO
 
