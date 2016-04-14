@@ -20,14 +20,23 @@ urlpatterns = patterns('',
     url(r'^pull_from_hdfs/(?P<pk>[0-9]+)/$', views.pull_from_hdfs),
     url(r'^download_file/(?P<pk>[0-9]+)/$', views.download_file),
 
+    # FS Files
+    url(r'^fs/ls/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.fs_file_detail),
+    url(r'^fs/ls//$', views.fs_file_detail),
+    url(r'^fs/mkdir/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.create_fs_folder),
+    url(r'^fs/rm/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.fs_delete_file),
+    url(r'^fs/rmdir/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.fs_delete_folder),
+    url(r'^fs/upload/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.upload_fs_file),
+    url(r'^fs/download//(?P<path>[0-9a-zA-Z/_.-]+)/$', views.download_fs_file),
+
     # HDFS Files
-    url(r'^hdfs_files/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.hdfs_file_detail),
-    url(r'^create_hdfs_folder/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.create_hdfs_folder),
-    url(r'^delete_hdfs_file/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.hdfs_delete_file),
-    url(r'^delete_hdfs_folder/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.hdfs_delete_folder),
-    url(r'^hdfs_files//$', views.hdfs_file_detail),
-    url(r'^upload_hdfs_file/(?P<hdfspath>[0-9a-zA-Z/_.-]+)/$', views.upload_hdfs_file),
-    url(r'^download_hdfs_file/(?P<hdfspath>[0-9a-zA-Z/_.-]+)/$', views.download_hdfs_file),
+    url(r'^hdfs/ls/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.hdfs_file_detail),
+    url(r'^hdfs/ls//$', views.hdfs_file_detail),
+    url(r'^hdfs/mkdir/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.create_hdfs_folder),
+    url(r'^hdfs/rm/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.hdfs_delete_file),
+    url(r'^hdfs/rmdir/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.hdfs_delete_folder),
+    url(r'^hdfs/upload/(?P<hdfspath>[0-9a-zA-Z/_.-]+)/$', views.upload_hdfs_file),
+    url(r'^hdfs/download/(?P<hdfspath>[0-9a-zA-Z/_.-]+)/$', views.download_hdfs_file),
 
     # Jobs
     url(r'^jobs/?$', views.job_list),

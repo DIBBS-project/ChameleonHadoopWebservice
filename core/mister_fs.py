@@ -40,36 +40,46 @@ class MisterFs:
         if not os.path.exists(self.path):
             os.makedirs(self.path)
 
-    def list_files(self):
-        return os.listdir(self.path)
+    def list_files(self, given_path):
+        path = "%s/%s" % (self.path, given_path)
+        if os.path.exists(path):
+            if os.path.isfile(path):
+                filename = given_path.split("/")[-1]
+                return [filename]
+            else:
+                return os.listdir(path)
+        else:
+            return []
 
-    def create_file(self, name, data):
+    def create_file(self, given_path, data):
+        path = "%s/%s" % (self.path, given_path)
         # Delete file if it already exists
-        if self.file_exist(name):
-            self.delete_file(name)
+        if os.path.exists(path):
+            self.delete_file(path)
         # Write data in a new file
-        file_path = "%s/%s" % (self.path, name)
-        with open(file_path, "a") as f:
+        with open(path, "a") as f:
             f.write(data)
         return True
 
-    def load_file(self, name):
-        file_path = "%s/%s" % (self.path, name)
-        with open(file_path, "r") as content_file:
+    def load_file(self, given_path):
+        path = "%s/%s" % (self.path, given_path)
+        with open(path, "r") as content_file:
             content = content_file.read()
         return content
 
-    def file_exist(self, name):
-        return name in self.list_files()
-
-    def delete_file(self, name):
-        file_path = "%s/%s" % (self.path, name)
-        os.remove(file_path)
+    def delete_file(self, given_path, is_folder=False):
+        path = "%s/%s" % (self.path, given_path)
+        if not is_folder:
+            if given_path != "":
+                os.remove(path)
+        else:
+            os.removedirs(path)
         pass
 
-    def clean_folder(self):
-        for name in self.list_files():
-            self.delete_file(name)
+    def create_folder(self, given_path):
+        path = "%s/%s" % (self.path, given_path)
+        return os.mkdir(path)
+
 
 if __name__ == "__main__":
     fs_manager = MisterFs()

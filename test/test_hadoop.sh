@@ -85,6 +85,8 @@ HADOOP_JOB_CREATION_OUTPUT=$(curl -H "Content-Type: application/json" -X POST -d
 HADOOP_JOB_ID=$(extract_id $HADOOP_JOB_CREATION_OUTPUT)
 echo "HADOOP_JOB_ID: $HADOOP_JOB_ID"
 
+exit 0
+
 # Run "test.jar" with hadoop
 curl -i -X GET  $REMOTE_HADOOP_WEBSERVICE_HOST/run_hadoop_job/$HADOOP_JOB_ID/
 

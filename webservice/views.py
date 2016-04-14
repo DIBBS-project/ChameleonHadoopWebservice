@@ -178,6 +178,116 @@ def job_detail(request, pk):
         return HttpResponse(status=204)
 
 
+##############################
+# FS
+##############################
+
+
+@api_view(['GET', 'DELETE'])
+@csrf_exempt
+def fs_file_detail(request, path=None):
+    """
+    Retrieve, update or delete an HDFS file.
+    """
+
+    if path is None:
+        path = ""
+
+    if request.method == 'GET':
+        response = mister_fs.list_files(path)
+        # files = response["FileStatuses"]["FileStatus"] if len(response) > 0 else []
+        # if len(files) == 1:
+        #     filename = path.split("/")[-1]
+        #     files[0]["pathSuffix"] = filename
+        files = response
+        return Response(files)
+
+    if request.method == 'DELETE':
+        files = mister_fs.delete_file(path)
+        return Response(files)
+
+
+@api_view(['GET'])
+@csrf_exempt
+def fs_delete_file(request, path):
+    """
+    Delete an FS file.
+    """
+
+    if request.method == 'GET':
+        status = mister_fs.delete_file(path)
+        return Response(status)
+
+
+@api_view(['GET'])
+@csrf_exempt
+def fs_delete_folder(request, path):
+    """
+    Delete an HDFS folder.
+    """
+
+    if request.method == 'GET':
+        status = mister_fs.delete_file(path, is_folder=True)
+        return Response(status)
+
+
+@api_view(['GET'])
+@csrf_exempt
+def create_fs_folder(request, path):
+    """
+    Create an FS folder.
+    """
+
+    if request.method == 'GET':
+        status = mister_fs.create_folder(path)
+        return Response(status)
+
+
+@api_view(['GET'])
+@csrf_exempt
+def download_fs_file(request, path):
+    """
+    Download a FS file
+    """
+
+    if request.method == 'GET':
+        filename = path.split("/")[-1]
+        data = mister_fs.load_file(filename)
+        response = HttpResponse(data)
+        response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(path)
+        response['X-Sendfile'] = smart_str(filename)
+        return response
+
+        return mister_hdfs.list_files(path)
+
+
+@api_view(['POST'])
+@csrf_exempt
+def upload_fs_file(request, path):
+    """
+    Retrieve, update or delete an user.
+    """
+
+    if request.method == 'POST':
+        filename = path.split("/")[-1]
+
+        # Read content of the file
+        file_content = request.data['data'].read()
+        # import uuid
+        # tmp_filename = str(uuid.uuid4())
+        # Update the local file
+        mister_fs.create_file(path, file_content)
+
+        # Put the file on FS
+        mister_hadoop.add_local_file_to_hdfs(path, filename)
+        return Response({"status": "ok"}, status=201)
+
+
+##############################
+# HDFS
+##############################
+
+
 @api_view(['GET', 'DELETE'])
 @csrf_exempt
 def hdfs_file_detail(request, path=None):
