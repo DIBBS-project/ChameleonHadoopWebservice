@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from webservice.models import File, Job
+from webservice.models import Job
 import uuid
 
 
