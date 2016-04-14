@@ -206,6 +206,18 @@ def hdfs_file_detail(request, path=None):
 
 @api_view(['GET'])
 @csrf_exempt
+def create_hdfs_folder(request, path):
+    """
+    Create an HDFS folder.
+    """
+
+    if request.method == 'GET':
+        mister_hadoop.create_hdfs_folder(path)
+        return Response({"status": "ok"})
+
+
+@api_view(['GET'])
+@csrf_exempt
 def download_hdfs_file(request, hdfspath):
     """
     Retrieve, update or delete an user.

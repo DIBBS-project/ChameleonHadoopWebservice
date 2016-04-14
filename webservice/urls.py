@@ -22,6 +22,7 @@ urlpatterns = patterns('',
 
     # HDFS Files
     url(r'^hdfs_files/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.hdfs_file_detail),
+    url(r'^create_hdfs_folder/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.create_hdfs_folder),
     url(r'^hdfs_files//$', views.hdfs_file_detail),
     url(r'^download_hdfs_file/(?P<hdfspath>[0-9a-zA-Z/_.-]+)/$', views.download_hdfs_file),
     # url(r'^pull_hdfs_file///$', views.pull_hdfs_file),

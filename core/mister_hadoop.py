@@ -35,16 +35,27 @@ class MisterHadoop:
     def __init__(self, parameters=None):
         pass
 
-    def add_local_file_to_hdfs(self, hdfs_name, local_path):
+    def add_local_file_to_hdfs(self, hdfs_path, local_path):
         input_file = "hadoop/add_local_file_to_hdfs.sh.jinja2"
         output_file = "tmp/add_local_file_to_hdfs.sh"
         context = {
-            "hdfs_name": hdfs_name,
+            "hdfs_path": hdfs_path,
             "local_path": local_path
         }
         generate_template_file(input_file, output_file, context)
         subprocess.call("bash %s" % (output_file), shell=True)
         pass
+
+    def create_hdfs_folder(self, hdfs_path):
+        input_file = "hadoop/create_hdfs_folder.sh.jinja2"
+        output_file = "tmp/create_hdfs_folder.sh"
+        context = {
+            "hdfs_path": hdfs_path
+        }
+        generate_template_file(input_file, output_file, context)
+        subprocess.call("bash %s" % (output_file), shell=True)
+        pass
+
 
     def run_job(self, jar_file, parameters):
         input_file = "hadoop/run_job.sh.jinja2"
