@@ -1,17 +1,37 @@
 from rest_framework import serializers
-from webservice.models import Job
+from webservice.models import Job, Execution
+from core.mister_hadoop import MisterHadoop
 import uuid
 
 
 def generate_uuid():
     return "%s" % (uuid.uuid4())
 
+mister_hadoop = MisterHadoop()
 
 class JobSerializer(serializers.Serializer):
     id = serializers.IntegerField(label='ID', read_only=True)
     name = serializers.CharField(max_length=100, allow_blank=False, default='')
     status = serializers.CharField(max_length=100, allow_blank=False, default='')
     command = serializers.CharField(allow_blank=True, default='')
+    job_history = serializers.SerializerMethodField('get_job_history')
+
+    def get_job_history(self, job):
+        related_executions = map(lambda x: x.id, Execution.objects.filter(job_id=job.id))
+        job_history = mister_hadoop.get_running_jobs()
+        result = []
+        for execution in related_executions:
+            hadoop_job_details = filter(lambda x: x["id"] == execution.application_hadoop_id, job_history)
+            if hadoop_job_details:
+                hadoop_job_detail = hadoop_job_details[0]
+                result += [{
+                    "id": execution.id,
+                    "application_hadoop_id": execution.application_hadoop_id,
+                    "progress": hadoop_job_detail["progress"],
+                    "state": hadoop_job_detail["state"],
+                    "finalStatus": hadoop_job_detail["finalStatus"]
+                }]
+        return result
 
     def create(self, validated_data):
         """
