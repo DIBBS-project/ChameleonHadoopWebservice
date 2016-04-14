@@ -62,7 +62,7 @@ class MisterHadoop:
         output_file = "tmp/collect_file_from_hdfs.sh"
         context = {
             "hdfs_name": hdfs_name,
-            "output_file": output_file
+            "output_file": local_path
         }
         generate_template_file(input_file, output_file, context)
         subprocess.call("bash %s" % (output_file), shell=True)
