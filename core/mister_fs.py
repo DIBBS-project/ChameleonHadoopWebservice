@@ -73,7 +73,7 @@ class MisterFs:
             if given_path != "":
                 os.remove(path)
         else:
-            os.removedirs(path)
+            os.rmtree(path)
         pass
 
     def create_folder(self, given_path):
