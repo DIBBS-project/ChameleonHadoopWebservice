@@ -21,8 +21,8 @@ urlpatterns = patterns('',
     url(r'^download_file/(?P<pk>[0-9]+)/$', views.download_file),
 
     # HDFS Files
-    url(r'^hdfs_files/(?P<path>)/$', views.hdfs_file_detail),
-    url(r'^pull_hdfs_file/(?P<hdfspath>)/(?P<localpath>)/$', views.pull_hdfs_file),
+    url(r'^hdfs_files/(?P<path>[0-9a-zA-Z]+)/$', views.hdfs_file_detail),
+    url(r'^pull_hdfs_file/(?P<hdfspath>[0-9a-zA-Z]+)/(?P<localpath>[0-9a-zA-Z]+)/$', views.pull_hdfs_file),
 
     # Jobs
     url(r'^jobs/?$', views.job_list),
