@@ -2,6 +2,7 @@
 
 import logging
 import os
+import shutil
 
 logging.basicConfig(level=logging.INFO)
 
@@ -73,7 +74,7 @@ class MisterFs:
             if given_path != "":
                 os.remove(path)
         else:
-            os.rmtree(path)
+            shutil.rmtree(path)
         pass
 
     def create_folder(self, given_path):
