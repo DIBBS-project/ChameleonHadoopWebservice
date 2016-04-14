@@ -22,7 +22,7 @@ urlpatterns = patterns('',
 
     # HDFS Files
     url(r'^hdfs_files/(?P<path>)/$', views.hdfs_file_detail),
-    url(r'^pull_hdfs_file/(?P<path>)/$', views.pull_hdfs_file),
+    url(r'^pull_hdfs_file/(?P<hdfspath>)/(?P<localpath>)/$', views.pull_hdfs_file),
 
     # Jobs
     url(r'^jobs/?$', views.job_list),
