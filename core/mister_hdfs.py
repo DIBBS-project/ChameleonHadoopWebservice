@@ -52,8 +52,8 @@ def call_rest(url, method="GET"):
         c.setopt(c.HTTPPATCH, 1)
 
     print("c.setopt(c.URL, %s)" % (url))
-    
-    c.setopt(c.URL, url)
+
+    c.setopt(c.URL, str(url))
     c.setopt(c.WRITEFUNCTION, data.write)
     c.perform()
 
