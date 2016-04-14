@@ -110,9 +110,12 @@ class MisterHadoop:
         application_hadoop_id = None
         pattern = "Submitted application"
         while application_hadoop_id is None:
-            out = check_output("grep '%s' %s | sed 's/.*Submitted application //g'" % (pattern, stdout_file))
-            if out != "":
-                application_hadoop_id = out
+            try:
+                out = check_output("grep '%s' %s | sed 's/.*Submitted application //g'" % (pattern, stdout_file))
+                if out != "":
+                    application_hadoop_id = out
+            except:
+                pass
 
         return {"application_hadoop_id": application_hadoop_id}
 
