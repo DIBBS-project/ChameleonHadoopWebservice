@@ -61,7 +61,7 @@ class MisterHadoop:
         input_file = "hadoop/collect_file_from_hdfs.sh.jinja2"
         output_file = "tmp/collect_file_from_hdfs.sh"
         context = {
-            "hdfs_name": hdfs_name,
+            "hdfs_path": hdfs_name,
             "output_file": local_path
         }
         generate_template_file(input_file, output_file, context)
