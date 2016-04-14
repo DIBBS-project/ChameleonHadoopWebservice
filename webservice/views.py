@@ -181,50 +181,48 @@ def job_detail(request, pk):
         return HttpResponse(status=204)
 
 
-# Methods related to HDFS Files
-@api_view(['GET', 'POST'])
-@csrf_exempt
-def hdfs_file_list(request):
-    """
-    List all files, or create a new file.
-    """
-    if request.method == 'GET':
-        files = mister_hdfs.list_files()
-        return Response(files)
-    elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = FileSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
+# # Methods related to HDFS Files
+# @api_view(['GET'])
+# @csrf_exempt
+# def hdfs_file_list(request):
+#     """
+#     List all files, or create a new file.
+#     """
+#     if request.method == 'GET':
+#         files = mister_hdfs.list_files()
+#         return Response(files)
+#     elif request.method == 'POST':
+#         data = JSONParser().parse(request)
+#         serializer = FileSerializer(data=data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=201)
+#         return Response(serializer.errors, status=400)
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
+@api_view(['GET', 'DELETE'])
 @csrf_exempt
-def hdfs_file_detail(request, pk):
+def hdfs_file_detail(request, path):
     """
     Retrieve, update or delete an user.
     """
-    try:
-        file = File.objects.get(pk=pk)
-    except File.DoesNotExist:
-        return HttpResponse(status=404)
+    # try:
+    #     file = File.objects.get(pk=pk)
+    # except File.DoesNotExist:
+    #     return HttpResponse(status=404)
 
     if request.method == 'GET':
-        file.password = "*" * len(file.password)
-        serializer = FileSerializer(file)
-        return Response(serializer.data)
+        return mister_hdfs.list_files(path)
 
-    elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = FileSerializer(file, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            # user.password = "*" * len(user.password)
-            serializer = FileSerializer(file, data=data)
-            return Response(serializer.data)
-        return Response(serializer.errors, status=400)
+    # elif request.method == 'PUT':
+    #     data = JSONParser().parse(request)
+    #     serializer = FileSerializer(file, data=data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         # user.password = "*" * len(user.password)
+    #         serializer = FileSerializer(file, data=data)
+    #         return Response(serializer.data)
+    #     return Response(serializer.errors, status=400)
 
     elif request.method == 'DELETE':
         file.delete()
