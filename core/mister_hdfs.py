@@ -66,7 +66,7 @@ class MisterHdfs:
         self.url_postfix = "http://%s:50070/webhdfs/v1" % (self.server_ip)
 
     def call_whdfs(self, hdfs_path, operation, http_method):
-        return call_rest("%s/%s?op=%s&user.name=hdfs" % (self.url_postfix, hdfs_path, operation), http_method)
+        return call_rest("%s/%s?op=%s&user.name=root" % (self.url_postfix, hdfs_path, operation), http_method)
 
     def list_files(self, hdfs_path):
         return self.call_whdfs(hdfs_path, "LISTSTATUS", "GET")
