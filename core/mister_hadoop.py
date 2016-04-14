@@ -101,8 +101,8 @@ class MisterHadoop:
         generate_template_file(input_file, output_file, context)
 
         job_id = uuid.uuid4()
-        stdout_file = "output_%s" % (job_id)
-        subprocess.call("bash %s > tmp/%s&" % (output_file, stdout_file), shell=True)
+        stdout_file = "tmp/output_%s" % (job_id)
+        subprocess.call("bash %s > %s&" % (output_file, stdout_file), shell=True)
 
         application_hadoop_id = None
         pattern = "Submitted application"
