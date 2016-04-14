@@ -62,7 +62,7 @@ def call_rest(url, method="GET"):
 class MisterHdfs:
 
     def __init__(self, path=None):
-        self.server_ip = "129.114.111.66"
+        self.server_ip = "127.0.0.1"
         self.url_postfix = "http://%s:50070/webhdfs/v1" % (self.server_ip)
 
     def call_whdfs(self, hdfs_path, operation, http_method):
