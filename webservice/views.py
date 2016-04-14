@@ -228,6 +228,35 @@ def hdfs_file_detail(request, path):
         file.delete()
         return HttpResponse(status=204)
 
+@api_view(['GET', 'DELETE'])
+@csrf_exempt
+def pull_hdfs_file(request, hdfspath, localpath):
+    """
+    Retrieve, update or delete an user.
+    """
+    # try:
+    #     file = File.objects.get(pk=pk)
+    # except File.DoesNotExist:
+    #     return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        return mister_hdfs.list_files(hdfspath)
+
+    # elif request.method == 'PUT':
+    #     data = JSONParser().parse(request)
+    #     serializer = FileSerializer(file, data=data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         # user.password = "*" * len(user.password)
+    #         serializer = FileSerializer(file, data=data)
+    #         return Response(serializer.data)
+    #     return Response(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        file.delete()
+        return HttpResponse(status=204)
+
+
 @api_view(['GET'])
 @csrf_exempt
 def run_hadoop_job(request, pk):
