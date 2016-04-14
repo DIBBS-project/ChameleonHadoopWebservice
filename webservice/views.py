@@ -51,7 +51,7 @@ def file_list(request):
 @api_view(['POST'])
 @csrf_exempt
 def set_file_content(request, pk):
-    if request.method == 'POST' or True:
+    if request.method == 'POST':
         # Read content of the file
         file_content = request.data['data'].read()
         # Find the DB file
@@ -237,6 +237,27 @@ def download_hdfs_file(request, hdfspath):
         return response
 
         return mister_hdfs.list_files(hdfspath)
+
+
+@api_view(['PUT'])
+@csrf_exempt
+def upload_hdfs_file(request, hdfspath):
+    """
+    Retrieve, update or delete an user.
+    """
+
+    if request.method == 'GET':
+
+        # Read content of the file
+        file_content = request.data['data'].read()
+        import uuid
+        tmp_filename = str(uuid.uuid4())
+        # Update the local file
+        mister_fs.create_file(tmp_filename, file_content)
+
+        # Put the file on HDFS
+        mister_hadoop.add_local_file_to_hdfs(file.hdfs_name, tmp_filename)
+        return Response({"status": "ok"}, status=201)
 
 
 @api_view(['GET'])

@@ -65,6 +65,9 @@ curl -H "Content-Type: application/json" -X DELETE $REMOTE_HADOOP_WEBSERVICE_HOS
 TEST_JAR_CREATION_OUTPUT=$(curl -H "Content-Type: application/json" -X POST -d '{"name": "test.jar"}' $REMOTE_HADOOP_WEBSERVICE_HOST/files)
 TEST_JAR_ID=$(extract_id $TEST_JAR_CREATION_OUTPUT)
 
+TEST_TXT_CREATION_OUTPUT=$(curl -H "Content-Type: application/json" -X POST $REMOTE_HADOOP_WEBSERVICE_HOST/user/root/)
+TEST_TXT_ID=$(extract_id $TEST_TXT_CREATION_OUTPUT)
+
 TEST_TXT_CREATION_OUTPUT=$(curl -H "Content-Type: application/json" -X POST -d '{"name": "test.txt"}' $REMOTE_HADOOP_WEBSERVICE_HOST/files)
 TEST_TXT_ID=$(extract_id $TEST_TXT_CREATION_OUTPUT)
 
