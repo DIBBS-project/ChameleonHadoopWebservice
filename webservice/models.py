@@ -13,5 +13,5 @@ class Job(models.Model):
 
 
 class Execution(models.Model):
-    uuid = models.CharField(max_length=100, blank=False, default=generate_uuid, unique=True)
+    application_hadoop_id = models.CharField(max_length=100, blank=False, default=generate_uuid, unique=True)
     job = models.ForeignKey(Job, to_field='id')

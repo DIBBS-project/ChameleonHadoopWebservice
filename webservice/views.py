@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from webservice.models import Job
+from webservice.models import Job, Execution
 from webservice.serializers import JobSerializer
 
 from django.views.decorators.csrf import csrf_exempt
@@ -87,9 +87,12 @@ def run_hadoop_job(request, pk):
     if request.method == 'GET' or True:
         # Find the Hadoop job
         job = Job.objects.filter(id=pk).first()
-        mister_hadoop.run_job(job.command)
+        response = mister_hadoop.run_job(job.command)
+        execution = Execution()
+        execution.application_hadoop_id = response["application_hadoop_id"]
+        execution.save()
 
-        return Response({"status": "ok"}, status=200)
+        return Response({"status": "ok", "application_hadoop_id": execution.uuid}, status=200)
 
 
 @api_view(['GET'])

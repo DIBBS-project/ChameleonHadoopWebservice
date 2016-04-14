@@ -5,9 +5,11 @@ import os
 import pycurl
 import json
 from io import BytesIO
+import uuid
 
 logging.basicConfig(level=logging.INFO)
 import subprocess
+from subprocess import check_output
 
 parameters = {}
 from jinja2 import Environment, FileSystemLoader
@@ -97,8 +99,19 @@ class MisterHadoop:
             "command": command
         }
         generate_template_file(input_file, output_file, context)
-        subprocess.call("bash %s" % (output_file), shell=True)
-        pass
+
+        job_id = uuid.uuid4()
+        stdout_file = "output_%s" % (job_id)
+        subprocess.call("bash %s > tmp/%s&" % (output_file, stdout_file), shell=True)
+
+        application_hadoop_id = None
+        pattern = "Submitted application"
+        while application_hadoop_id is None:
+            out = check_output("grep '%s' %s | sed 's/.*Submitted application //g'" % (pattern, stdout_file))
+            if out != "":
+                application_hadoop_id = out
+
+        return {"application_hadoop_id": application_hadoop_id}
 
     def collect_file_from_hdfs(self, hdfs_name, local_path):
         input_file = "hadoop/collect_file_from_hdfs.sh.jinja2"
