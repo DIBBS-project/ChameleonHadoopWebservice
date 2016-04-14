@@ -229,7 +229,7 @@ def download_hdfs_file(request, hdfspath):
     if request.method == 'GET':
         import uuid
         random_filename = str(uuid.uuid4())
-        filename = hdfspath.split("/")[0]
+        filename = hdfspath.split("/")[-1]
 
 
         print({"random_filename": random_filename, "filename": filename})
