@@ -231,12 +231,14 @@ def download_hdfs_file(request, hdfspath):
         random_filename = str(uuid.uuid4())
         filename = hdfspath.split("/")[0]
 
+
+        print({"random_filename": random_filename, "filename": filename})
         mister_hadoop.collect_file_from_hdfs(hdfspath, random_filename)
 
         data = mister_fs.load_file(random_filename)
         response = HttpResponse(data)
         response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(filename)
-        response['X-Sendfile'] = smart_str(filename)
+        response['X-Sendfile'] = smart_str(random_filename)
         return response
 
         return mister_hdfs.list_files(hdfspath)
