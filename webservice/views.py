@@ -301,7 +301,7 @@ def run_hadoop_job(request, pk):
 
 @api_view(['GET'])
 @csrf_exempt
-def get_running_jobs(request, path=None):
+def get_running_jobs(request):
     """
     Get runnin hadoop jobs.
     """

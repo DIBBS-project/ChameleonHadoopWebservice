@@ -33,5 +33,5 @@ urlpatterns = patterns('',
     url(r'^jobs/?$', views.job_list),
     url(r'^jobs/(?P<pk>[0-9]+)/$', views.job_detail),
     url(r'^run_hadoop_job/(?P<pk>[0-9]+)/$', views.run_hadoop_job),
-    url(r'^get_running_jobs/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.get_running_jobs),
+    url(r'^get_running_jobs/$', views.get_running_jobs),
 )
