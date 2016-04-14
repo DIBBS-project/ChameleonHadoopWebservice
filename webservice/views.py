@@ -401,10 +401,7 @@ def run_hadoop_job(request, pk):
     if request.method == 'GET' or True:
         # Find the Hadoop job
         job = Job.objects.filter(id=pk).first()
-        # Get the corresponding file
-        jar_path = job.file.local_file_path
-
-        mister_hadoop.run_job(jar_path, job.parameters)
+        mister_hadoop.run_job(job.command)
 
         return Response({"status": "ok"}, status=200)
 
@@ -418,11 +415,8 @@ def get_running_jobs(request):
 
     if request.method == 'GET':
         response = mister_hadoop.get_running_jobs()
-        files = response["apps"]["app"] if len(response) > 0 else []
-        if len(files) == 1:
-            filename = path.split("/")[-1]
-            files[0]["pathSuffix"] = filename
-        return Response(files)
+        jobs = response["apps"]["app"] if len(response) > 0 else []
+        return Response(jobs)
 
 
 if len(File.objects.all()) == 0 and len(Job.objects.all()) == 0:

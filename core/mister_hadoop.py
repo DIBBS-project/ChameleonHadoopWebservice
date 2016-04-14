@@ -90,12 +90,11 @@ class MisterHadoop:
         subprocess.call("bash %s" % (output_file), shell=True)
         pass
 
-    def run_job(self, jar_file, parameters):
+    def run_job(self, command):
         input_file = "hadoop/run_job.sh.jinja2"
         output_file = "tmp/run_job.sh"
         context = {
-            "jar_file": jar_file,
-            "parameters": parameters
+            "command": command
         }
         generate_template_file(input_file, output_file, context)
         subprocess.call("bash %s" % (output_file), shell=True)
