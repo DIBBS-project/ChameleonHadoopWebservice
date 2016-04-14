@@ -17,9 +17,9 @@ from core.mister_hdfs import MisterHdfs
 from django.utils.encoding import smart_str
 
 
-def index(request):
-    files = File.objects.all()
-    return render(request, "index.html", {"files": files})
+# def index(request):
+#     files = File.objects.all()
+#     return render(request, "index.html", {"files": files})
 
 
 mister_hadoop = MisterHadoop()
@@ -105,9 +105,9 @@ def get_running_jobs(request):
         return Response(jobs)
 
 
-if len(File.objects.all()) == 0 and len(Job.objects.all()) == 0:
-    from webservice.fixtures import create_data
-    create_data()
+# if len(File.objects.all()) == 0 and len(Job.objects.all()) == 0:
+#     from webservice.fixtures import create_data
+#     create_data()
 
 
 ##############################
