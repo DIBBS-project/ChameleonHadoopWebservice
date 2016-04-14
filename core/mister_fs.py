@@ -56,7 +56,7 @@ class MisterFs:
         path = "%s/%s" % (self.path, given_path)
         # Delete file if it already exists
         if os.path.exists(path):
-            self.delete_file(path)
+            os.remove(path)
         # Write data in a new file
         with open(path, "a") as f:
             f.write(data)
@@ -72,10 +72,10 @@ class MisterFs:
         path = "%s/%s" % (self.path, given_path)
         if os.path.exists(path):
             if not is_folder:
-                if given_path != "":
-                    os.remove(path)
+                os.remove(path)
             else:
-                shutil.rmtree(path)
+                if given_path != "":
+                    shutil.rmtree(path)
         pass
 
     def create_folder(self, given_path):
