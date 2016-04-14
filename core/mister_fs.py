@@ -70,11 +70,12 @@ class MisterFs:
 
     def delete_file(self, given_path, is_folder=False):
         path = "%s/%s" % (self.path, given_path)
-        if not is_folder:
-            if given_path != "":
-                os.remove(path)
-        else:
-            shutil.rmtree(path)
+        if os.path.exists(path):
+            if not is_folder:
+                if given_path != "":
+                    os.remove(path)
+            else:
+                shutil.rmtree(path)
         pass
 
     def create_folder(self, given_path):
