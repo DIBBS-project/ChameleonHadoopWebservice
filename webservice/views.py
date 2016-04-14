@@ -256,7 +256,7 @@ def upload_hdfs_file(request, hdfspath):
         mister_fs.create_file(tmp_filename, file_content)
 
         # Put the file on HDFS
-        mister_hadoop.add_local_file_to_hdfs(file.hdfs_name, tmp_filename)
+        mister_hadoop.add_local_file_to_hdfs(hdfspath, tmp_filename)
         return Response({"status": "ok"}, status=201)
 
 
