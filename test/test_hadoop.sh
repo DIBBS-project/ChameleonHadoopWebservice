@@ -68,13 +68,14 @@ TEST_JAR_ID=$(extract_id $TEST_JAR_CREATION_OUTPUT)
 TEST_TXT_CREATION_OUTPUT=$(curl -H "Content-Type: application/json" -X POST $REMOTE_HADOOP_WEBSERVICE_HOST/user/root/)
 TEST_TXT_ID=$(extract_id $TEST_TXT_CREATION_OUTPUT)
 
-echo $TEST_JAR_ID
+echo $TEST_JAR_IDxz
 
 # Upload local files to the application
 curl -i -X POST -F 'data=@test.jar' $REMOTE_HADOOP_WEBSERVICE_HOST/set_file_content/$TEST_JAR_ID/
 
 # Copy test.txt to HDFS in the "input" file
-curl -i -X POST -F 'data=@test.txt' $REMOTE_HADOOP_WEBSERVICE_HOST/upload_hdfs_file/input/
+curl -i -X POST -F 'data=@test.txt' $REMOTE_HADOOP_WEBSERVICE_HOST/create_hdfs_folder/user/root/
+curl -i -X POST -F 'data=@test.txt' $REMOTE_HADOOP_WEBSERVICE_HOST/upload_hdfs_file/user/root/input/
 
 # Create Hadoop job
 HADOOP_JOB_CREATION_OUTPUT=$(curl -H "Content-Type: application/json" -X POST -d "{\"name\": \"test\", \"file_id\": $TEST_JAR_ID, \"parameters\": \"input output dummyparameter\"}" $REMOTE_HADOOP_WEBSERVICE_HOST/jobs)
@@ -87,7 +88,6 @@ curl -i -X GET  $REMOTE_HADOOP_WEBSERVICE_HOST/run_hadoop_job/$HADOOP_JOB_ID/
 sleep 30
 
 # Collect result files: "output" located in HDFS will be copied to the "output.txt" file
-#curl -H "Content-Type: application/json" -X GET $REMOTE_HADOOP_WEBSERVICE_HOST/pull_from_hdfs/$OUTPUT_TXT_ID/
 curl -H "Content-Type: application/json" -X GET $REMOTE_HADOOP_WEBSERVICE_HOST/download_hdfs_file/user/root/output/part-r-00000/
 
 exit 0

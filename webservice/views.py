@@ -206,6 +206,30 @@ def hdfs_file_detail(request, path=None):
 
 @api_view(['GET'])
 @csrf_exempt
+def hdfs_delete_file(request, path):
+    """
+    Delete an HDFS file.
+    """
+
+    if request.method == 'GET':
+        files = mister_hdfs.delete_file(path)
+        return Response(files)
+
+
+@api_view(['GET'])
+@csrf_exempt
+def hdfs_delete_folder(request, path):
+    """
+    Delete an HDFS folder.
+    """
+
+    if request.method == 'GET':
+        files = mister_hdfs.delete_file(path, is_folder=True)
+        return Response(files)
+
+
+@api_view(['GET'])
+@csrf_exempt
 def create_hdfs_folder(request, path):
     """
     Create an HDFS folder.
