@@ -190,6 +190,9 @@ def hdfs_file_detail(request, path=None):
 
     if request.method == 'GET':
         files = mister_hdfs.list_files(path)["FileStatuses"]["FileStatus"]
+        if len(files) == 0:
+            filename = path.split("/")[-1]
+            files[0]["pathSuffix"] = filename
         return Response(files)
 
     if request.method == 'DELETE':
