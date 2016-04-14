@@ -189,7 +189,8 @@ def hdfs_file_detail(request, path=None):
         path = ""
 
     if request.method == 'GET':
-        files = mister_hdfs.list_files(path)["FileStatuses"]["FileStatus"]
+        response = mister_hdfs.list_files(path)
+        files = response["FileStatuses"]["FileStatus"] if len(response) > 0 else []
         if len(files) == 1:
             filename = path.split("/")[-1]
             files[0]["pathSuffix"] = filename
