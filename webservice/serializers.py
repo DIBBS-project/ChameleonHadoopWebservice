@@ -14,9 +14,9 @@ class JobSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100, allow_blank=False, default='')
     status = serializers.CharField(max_length=100, allow_blank=False, default='')
     command = serializers.CharField(allow_blank=True, default='')
-    job_history = serializers.SerializerMethodField('get_job_history')
+    history = serializers.SerializerMethodField('get_execution_history')
 
-    def get_job_history(self, job):
+    def get_execution_history(self, job):
         related_executions = map(lambda x: x.id, Execution.objects.filter(job_id=job.id))
         job_history = mister_hadoop.get_running_jobs()
         result = []
