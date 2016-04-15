@@ -101,11 +101,11 @@ class MisterHadoop:
 
         context = {
             "command": command,
-            "suffix": stdout_file
+            "suffix": " > %s &" % (stdout_file)
         }
         generate_template_file(input_file, output_file, context)
 
-        subprocess.call("bash %s > %s &" % (output_file, stdout_file), shell=True)
+        subprocess.call("bash %s" % (output_file), shell=True)
 
         # with open(stdout_file, 'w') as f:
         #     subprocess.Popen(["bash", output_file], stdout=f)
