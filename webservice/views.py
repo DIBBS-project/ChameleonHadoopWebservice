@@ -93,7 +93,7 @@ def run_hadoop_job(request, pk):
         execution.application_hadoop_id = response["application_hadoop_id"]
         execution.save()
 
-        return Response({"status": "ok", "application_hadoop_id": execution.uuid}, status=200)
+        return Response({"status": "ok", "application_hadoop_id": execution.application_hadoop_id}, status=200)
 
 
 @api_view(['GET'])
@@ -104,8 +104,7 @@ def get_running_jobs(request):
     """
 
     if request.method == 'GET':
-        response = mister_hadoop.get_running_jobs()
-        jobs = response["apps"]["app"] if len(response) > 0 else []
+        jobs = mister_hadoop.get_running_jobs()
         return Response(jobs)
 
 

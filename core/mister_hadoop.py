@@ -137,7 +137,9 @@ class MisterHadoop:
         subprocess.call("bash %s" % (output_file), shell=True)
 
     def get_running_jobs(self):
-        return self.call_whdfs("cluster/apps", "GET")
+        response = self.call_whdfs("cluster/apps", "GET")
+        result = response["apps"]["app"] if len(response) > 0 else []
+        return result
 
 
 if __name__ == "__main__":
