@@ -89,6 +89,7 @@ def run_hadoop_job(request, pk):
         job = Job.objects.filter(id=pk).first()
         response = mister_hadoop.run_job(job.command)
         execution = Execution()
+        execution.job = job
         execution.application_hadoop_id = response["application_hadoop_id"]
         execution.save()
 
