@@ -101,7 +101,7 @@ class MisterHadoop:
 
         context = {
             "command": command,
-            "suffix": " > %s &" % (stdout_file)
+            "suffix": " 2>&1 | tee %s &" % (stdout_file)
         }
         generate_template_file(input_file, output_file, context)
 
