@@ -23,7 +23,7 @@ class JobSerializer(serializers.Serializer):
         for execution in related_executions:
             print("job_history = %s" % (job_history))
             print("execution = %s" % (execution))
-            hadoop_job_details = filter(lambda x: x["id"] == execution.application_hadoop_id, job_history)
+            hadoop_job_details = filter(lambda x: str(x["id"]) == str(execution.application_hadoop_id), job_history)
             print("hadoop_job_details = %s" % (hadoop_job_details))
             if hadoop_job_details:
                 hadoop_job_detail = hadoop_job_details[0]
