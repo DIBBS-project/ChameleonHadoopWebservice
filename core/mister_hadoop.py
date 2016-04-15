@@ -114,8 +114,7 @@ class MisterHadoop:
             cmd = "grep '%s' %s | sed 's/.*Submitted application //g'" % (pattern, stdout_file)
             print("> %s" % cmd)
             try:
-                out = os.popen(cmd).read()
-                print("> (%s)" % (out))
+                out = os.popen(cmd).read().strip()
                 if out != "":
                     application_hadoop_id = out
             except Exception as e:
