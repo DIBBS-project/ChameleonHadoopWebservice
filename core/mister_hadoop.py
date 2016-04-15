@@ -118,6 +118,7 @@ class MisterHadoop:
             print("> %s" % cmd)
             try:
                 out = check_output(cmd)
+                print("> %s" % (out))
                 if out != "":
                     application_hadoop_id = out
             except:
