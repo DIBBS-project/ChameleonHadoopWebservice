@@ -21,6 +21,8 @@ class JobSerializer(serializers.Serializer):
         job_history = mister_hadoop.get_running_jobs()
         result = []
         for execution in related_executions:
+            print("job_history = %s" % (job_history))
+            print("execution = %s" % (execution))
             hadoop_job_details = filter(lambda x: x["id"] == execution.application_hadoop_id, job_history)
             if hadoop_job_details:
                 hadoop_job_detail = hadoop_job_details[0]
