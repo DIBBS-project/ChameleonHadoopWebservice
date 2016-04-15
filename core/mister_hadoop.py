@@ -121,7 +121,8 @@ class MisterHadoop:
                 print("> %s" % (out))
                 if out != "":
                     application_hadoop_id = out
-            except:
+            except Exception as e:
+                print e
                 pass
             time.sleep(1)
 
