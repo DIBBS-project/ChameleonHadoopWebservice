@@ -107,9 +107,6 @@ class MisterHadoop:
 
         subprocess.call("bash %s" % (output_file), shell=True)
 
-        # with open(stdout_file, 'w') as f:
-        #     subprocess.Popen(["bash", output_file], stdout=f)
-
         application_hadoop_id = None
         pattern = "Submitted application"
         import time
@@ -117,7 +114,8 @@ class MisterHadoop:
             cmd = "grep '%s' %s | sed 's/.*Submitted application //g'" % (pattern, stdout_file)
             print("> %s" % cmd)
             try:
-                out = check_output(cmd)
+                # out = check_output(cmd)
+                out = os.popen(cmd).read()
                 print("> %s" % (out))
                 if out != "":
                     application_hadoop_id = out
