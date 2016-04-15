@@ -114,8 +114,10 @@ class MisterHadoop:
         pattern = "Submitted application"
         import time
         while application_hadoop_id is None:
+            cmd = "grep '%s' %s | sed 's/.*Submitted application //g'" % (pattern, stdout_file)
+            print("> %s" % cmd)
             try:
-                out = check_output("grep '%s' %s | sed 's/.*Submitted application //g'" % (pattern, stdout_file))
+                out = check_output(cmd)
                 if out != "":
                     application_hadoop_id = out
             except:
