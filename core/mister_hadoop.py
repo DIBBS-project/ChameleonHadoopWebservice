@@ -95,17 +95,20 @@ class MisterHadoop:
     def run_job(self, command):
         input_file = "hadoop/run_job.sh.jinja2"
         output_file = "tmp/run_job.sh"
-        context = {
-            "command": command
-        }
-        generate_template_file(input_file, output_file, context)
 
         job_id = uuid.uuid4()
         stdout_file = "tmp/output_%s" % (job_id)
-        # subprocess.call("bash %s > %s &" % (output_file, stdout_file), shell=True)
 
-        with open(stdout_file, 'w') as f:
-            subprocess.Popen(["bash", output_file], stdout=f)
+        context = {
+            "command": command,
+            "suffix": stdout_file
+        }
+        generate_template_file(input_file, output_file, context)
+
+        subprocess.call("bash %s > %s &" % (output_file, stdout_file), shell=True)
+
+        # with open(stdout_file, 'w') as f:
+        #     subprocess.Popen(["bash", output_file], stdout=f)
 
         application_hadoop_id = None
         pattern = "Submitted application"
