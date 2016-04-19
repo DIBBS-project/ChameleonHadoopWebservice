@@ -136,7 +136,7 @@ class MisterHadoop:
 
     def get_running_jobs(self):
         response = self.call_whdfs("cluster/apps", "GET")
-        result = response["apps"]["app"] if len(response) > 0 else []
+        result = response["apps"]["app"] if len(response) > 0 and "app" in response["apps"] else []
         return result
 
 
