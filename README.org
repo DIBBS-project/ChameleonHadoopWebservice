@@ -1,4 +1,4 @@
-* ChameleonClusters
+* ChameleonHadoopWebservice
 
 This project enables the deployment of clusters on the Chameleon infrastructure.
 It is leveraging the *OpenStack API*,  the web framework *django* and the module
@@ -68,7 +68,7 @@ exit 0
 
 #+END_src
 
-** Webservice API
+** REST API description
 *** Local file system
 
 | URL                  | HTTP Method | Action                                                               | Supported | Comment |
