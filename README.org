@@ -25,7 +25,6 @@ bash reset_app.sh
 sudo python manage.py runserver 0.0.0.0:8000
 #+END_src
 
-
 ** Call the webservice
 
 Here is an example program that run an Hadoop job using the Webservice:
@@ -33,6 +32,7 @@ Here is an example program that run an Hadoop job using the Webservice:
 #+BEGIN_src shell
 #!/usr/bin/env bash
 
+# WARNING: replace the following URL with the adress of your Hadoop master node
 REMOTE_HADOOP_WEBSERVICE_HOST="http://129.114.111.66:8000"
 
 function extract_id {
@@ -68,25 +68,39 @@ exit 0
 
 #+END_src
 
-
+** Webservice API
 *** Local file system
 
-| URL         | HTTP Method | Action            | Supported | Comment |
-|-------------+-------------+-------------------+-----------+---------|
-| /fs/ls/[path]/     | GET         | list files located in the path    | Yes       |         |
-| /users/     | POST        | add a new user    | Yes       |         |
-| /users/[id] | GET         | details of a user | Yes       |         |
-| /users/[id] | PUT         | update a user     | Yes       |         |
-| /users/[id] | DELETE      | delete a user     | Yes       |         |
+| URL                  | HTTP Method | Action                                                               | Supported | Comment |
+|----------------------+-------------+----------------------------------------------------------------------+-----------+---------|
+| /fs/ls/[path]/       | GET, DELETE | list (or delete) files located in the given path (path can be empty) | Yes       |         |
+| /fs/mkdir/[path]/    | GET         | create a new folder in the given path                                | Yes       |         |
+| /fs/rm/[path]/       | GET         | rm the file located at the given path                                | Yes       |         |
+| /fs/rmdir/[path]/    | GET         | rm the folder located at the given path                              | Yes       |         |
+| /fs/upload/[path]/   | POST        | upload a file on the given path                                      | Yes       |         |
+| /fs/download/[path]/ | GET         | download  a file on the given path                                   | Yes       |         |
 
 *** HDFS file system
 
-| URL         | HTTP Method | Action            | Supported | Comment |
-|-------------+-------------+-------------------+-----------+---------|
-| /sites/     | GET         | list all   sites  | Yes       |         |
-| /sites/     | POST        | add a new site    | Yes       |         |
-| /sites/[id] | GET         | details of a site | Yes       |         |
-| /sites/[id] | PUT         | update a site     | Yes       |         |
-| /sites/[id] | DELETE      | delete a site     | Yes       |         |
+| URL                    | HTTP Method | Action                                                                    | Supported | Comment |
+|------------------------+-------------+---------------------------------------------------------------------------+-----------+---------|
+| /hdfs/ls/[path]/       | GET, DELETE | list (or delete) files located in the given HDFS path (path can be empty) | Yes       |         |
+| /hdfs/mkdir/[path]/    | GET         | create a new folder in the given HDFS path                                | Yes       |         |
+| /hdfs/rm/[path]/       | GET         | rm the file located at the given HDFS path                                | Yes       |         |
+| /hdfs/rmdir/[path]/    | GET         | rm the folder located at the given HDFS path                              | Yes       |         |
+| /hdfs/upload/[path]/   | POST        | upload a file on the given HDFS path                                      | Yes       |         |
+| /hdfs/download/[path]/ | GET         | download  a file on the given HDFS path                                   | Yes       |         |
 
 *** Hadoop Jobs
+
+| URL                        | HTTP Method | Action                                                               | Supported | Comment |
+|----------------------------+-------------+----------------------------------------------------------------------+-----------+---------|
+| /jobs/                     | GET         | List all "logical" Hadoop jobs (ie a program)                        | Yes       |         |
+| /jobs/                     | POST        | Create a new "logicial" Hadoop job                                   | Yes       |         |
+| jobs/[job_id]/             | GET         | Get the Hadoop "logical" job that corresponds to the given job_id    | Yes       |         |
+| jobs/[job_id]/             | PUT         | Update the "logical" job that corresponds to the given job_id        | Yes       |         |
+| jobs/[job_id]/             | DELETE      | Delete the "logical" job that corresponds to the given job_id        | Yes       |         |
+| run_hadoop_job /[job_id]/  | GET         | Run an execution of the job given in parameter                       | Yes       |         |
+| get_running_jobs/[job_id]/ | GET         | Get the the history of all executions of every "logical" Hadoop jobs | Yes       |         |
+
+
