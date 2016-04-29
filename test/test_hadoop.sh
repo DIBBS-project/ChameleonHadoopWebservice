@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-REMOTE_HADOOP_WEBSERVICE_HOST="http://129.114.110.165:8000"
+set -x
+
+REMOTE_HADOOP_WEBSERVICE_HOST="http://129.114.111.66:8000"
 
 function extract_id {
 
