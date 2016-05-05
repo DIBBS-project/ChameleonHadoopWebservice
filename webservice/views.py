@@ -26,7 +26,6 @@ mister_hadoop = MisterHadoop()
 mister_fs = MisterFs()
 mister_hdfs = MisterHdfs()
 
-
 ##############################
 # Hadoop
 ##############################
@@ -93,7 +92,10 @@ def run_hadoop_job(request, pk):
         execution.application_hadoop_id = response["application_hadoop_id"]
         execution.save()
 
-        return Response({"status": "ok", "application_hadoop_id": execution.application_hadoop_id}, status=200)
+        return Response(
+            {"status": "ok",
+             "application_hadoop_id": execution.application_hadoop_id},
+            status=200)
 
 
 @api_view(['GET'])
@@ -108,11 +110,6 @@ def get_running_jobs(request):
         return Response(jobs)
 
 
-# if len(File.objects.all()) == 0 and len(Job.objects.all()) == 0:
-#     from webservice.fixtures import create_data
-#     create_data()
-
-
 ##############################
 # FS
 ##############################
@@ -125,15 +122,12 @@ def fs_file_detail(request, path=None):
     Retrieve, update or delete an HDFS file.
     """
 
+    # By default, a non-set path refers to the root path
     if path is None:
         path = ""
 
     if request.method == 'GET':
         response = mister_fs.list_files(path)
-        # files = response["FileStatuses"]["FileStatus"] if len(response) > 0 else []
-        # if len(files) == 1:
-        #     filename = path.split("/")[-1]
-        #     files[0]["pathSuffix"] = filename
         files = response
         return Response(files)
 
@@ -189,7 +183,9 @@ def download_fs_file(request, path):
         filename = path.split("/")[-1]
         data = mister_fs.load_file(filename)
         response = HttpResponse(data)
-        response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(path)
+        response[
+            'Content-Disposition'] = 'attachment; filename=%s' % smart_str(
+                path)
         response['X-Sendfile'] = smart_str(filename)
         return response
 
@@ -208,15 +204,11 @@ def upload_fs_file(request, path):
 
         # Read content of the file
         file_content = request.data['data'].read()
-        # import uuid
-        # tmp_filename = str(uuid.uuid4())
-        # Update the local file
         mister_fs.create_file(path, file_content)
 
         # Put the file on FS
         mister_hadoop.add_local_file_to_hdfs(path, filename)
         return Response({"status": "ok"}, status=201)
-
 
 ##############################
 # HDFS
@@ -230,15 +222,26 @@ def hdfs_file_detail(request, path=None):
     Retrieve, update or delete an HDFS file.
     """
 
+    # By default, a non-set path refers to the root path
     if path is None:
         path = ""
 
     if request.method == 'GET':
         response = mister_hdfs.list_files(path)
-        files = response["FileStatuses"]["FileStatus"] if len(response) > 0 else []
-        if len(files) == 1:
-            filename = path.split("/")[-1]
-            files[0]["pathSuffix"] = filename
+
+        # Check if the path contains anything
+        if not "FileStatuses" in response:
+            return Response(
+                {"result": "error",
+                 "type": "hdfs_error",
+                 "msg": "file '/%s' does not exists" % (path)},
+                status=404)
+
+        # Check if the results contains files
+        files = response["FileStatuses"]["FileStatus"] if len(
+            response) > 0 else []
+
+        # Send the response
         return Response(files)
 
     if request.method == 'DELETE':
@@ -302,7 +305,9 @@ def download_hdfs_file(request, hdfspath):
 
         data = mister_fs.load_file(random_filename)
         response = HttpResponse(data)
-        response['Content-Disposition'] = 'attachment; filename=%s' % smart_str(filename)
+        response[
+            'Content-Disposition'] = 'attachment; filename=%s' % smart_str(
+                filename)
         response['X-Sendfile'] = smart_str(random_filename)
         return response
 
