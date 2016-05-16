@@ -1,0 +1,3 @@
+#!/bin/bash
+
+sudo $HADOOP_HOME/bin/hadoop fs -getmerge -nl /{{ hdfs_path }} tmp/{{ output_file }}
