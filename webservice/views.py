@@ -293,7 +293,7 @@ def create_hdfs_folder(request, path):
 @csrf_exempt
 def download_hdfs_file(request, hdfspath):
     """
-    Retrieve, update or delete an user.
+    Download an HDFS file.
     """
 
     if request.method == 'GET':
@@ -318,7 +318,7 @@ def download_hdfs_file(request, hdfspath):
 @csrf_exempt
 def upload_hdfs_file(request, hdfspath):
     """
-    Retrieve, update or delete an user.
+    Upload an HDFS file.
     """
 
     if request.method == 'POST':
@@ -339,7 +339,7 @@ def upload_hdfs_file(request, hdfspath):
 @csrf_exempt
 def hdfs_copy_to_local(request, hdfspath, localpath):
     """
-    Retrieve, update or delete an user.
+    Copy an HDFS file to a local path.
     """
 
     if request.method == 'GET':
@@ -360,7 +360,7 @@ def hdfs_copy_to_local(request, hdfspath, localpath):
 @csrf_exempt
 def hdfs_merge_directory(request, hdfspath, localpath):
     """
-    Retrieve, update or delete an user.
+    Merge files of an HDFS folder into a single local file.
     """
 
     if request.method == 'GET':
