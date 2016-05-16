@@ -333,3 +333,47 @@ def upload_hdfs_file(request, hdfspath):
         # Put the file on HDFS
         mister_hadoop.add_local_file_to_hdfs(hdfspath, tmp_filename)
         return Response({"status": "ok"}, status=201)
+
+
+@api_view(['GET'])
+@csrf_exempt
+def hdfs_copy_to_local(request, hdfspath, localpath):
+    """
+    Retrieve, update or delete an user.
+    """
+
+    if request.method == 'GET':
+
+        import uuid
+        random_filename = str(uuid.uuid4())
+        filename = hdfspath.split("/")[-1]
+
+        try:
+            mister_hadoop.collect_file_from_hdfs(hdfspath, localpath)
+        except:
+            return Response({"status": "bad"}, status=404)
+
+        return Response({"status": "ok"}, status=201)
+
+
+@api_view(['GET'])
+@csrf_exempt
+def hdfs_merge_directory(request, hdfspath, localpath):
+    """
+    Retrieve, update or delete an user.
+    """
+
+    if request.method == 'GET':
+
+        import uuid
+        random_filename = str(uuid.uuid4())
+        filename = hdfspath.split("/")[-1]
+
+        try:
+            mister_hdfs.merge_directory(hdfspath, localpath)
+        except Exception as e:
+            print(e)
+            return Response({"status": "bad"}, status=404)
+
+        return Response({"status": "ok"}, status=201)
+

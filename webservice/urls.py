@@ -27,7 +27,7 @@ urlpatterns = patterns('',
     url(r'^fs/rm/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.fs_delete_file),
     url(r'^fs/rmdir/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.fs_delete_folder),
     url(r'^fs/upload/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.upload_fs_file),
-    url(r'^fs/download//(?P<path>[0-9a-zA-Z/_.-]+)/$', views.download_fs_file),
+    url(r'^fs/download/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.download_fs_file),
 
     # HDFS Files
     url(r'^hdfs/ls/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.hdfs_file_detail),
@@ -37,6 +37,8 @@ urlpatterns = patterns('',
     url(r'^hdfs/rmdir/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.hdfs_delete_folder),
     url(r'^hdfs/upload/(?P<hdfspath>[0-9a-zA-Z/_.-]+)/$', views.upload_hdfs_file),
     url(r'^hdfs/download/(?P<hdfspath>[0-9a-zA-Z/_.-]+)/$', views.download_hdfs_file),
+    url(r'^hdfs/copytolocal/(?P<hdfspath>[0-9a-zA-Z/_.-]+)/_/(?P<localpath>[0-9a-zA-Z/_.-]+)/$', views.hdfs_copy_to_local),
+    url(r'^hdfs/mergedir/(?P<hdfspath>[0-9a-zA-Z/_.-]+)/_/(?P<localpath>[0-9a-zA-Z/_.-]+)/$', views.hdfs_merge_directory),
 
     # Jobs
     url(r'^jobs/?$', views.job_list),
