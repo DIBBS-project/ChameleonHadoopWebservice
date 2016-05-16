@@ -6,6 +6,9 @@ import pycurl
 import json
 from io import BytesIO
 import uuid
+import time
+import threading
+import requests
 
 logging.basicConfig(level=logging.INFO)
 import subprocess
@@ -91,6 +94,35 @@ class MisterHadoop:
         generate_template_file(input_file, output_file, context)
         subprocess.call("bash %s" % (output_file), shell=True)
         pass
+
+    def _wait_for_end_jobs_and_callback(self, application_hadoop_id, callback_url):
+        wait_for_end_of_execution = True
+        while wait_for_end_of_execution:
+            print("waiting for the end of %s" % (application_hadoop_id))
+            executions = filter(lambda x: x["id"] == application_hadoop_id, self.get_running_jobs())
+            if executions:
+                if executions[0]["progress"] == 100.0:
+                    wait_for_end_of_execution = False
+            time.sleep(1)
+        print("calling %s" % (callback_url))
+        # Inspired from: http://stackoverflow.com/questions/31826814/curl-post-request-into-pycurl-code
+        data = {"application_hadoop_id": application_hadoop_id}
+        response = requests.post(callback_url, json=data)
+        print response.status_code
+        pass
+
+    def watch_for_end_jobs_and_callback(self, application_hadoop_id, callback_url):
+        # Add a  thread that  will run  the function dedicated  to check  if the
+        # execution of the job  is finished: when it is the case,  a call to the
+        # callback_url will be made!
+        t = threading.Thread(target=self._wait_for_end_jobs_and_callback,
+                             args=(application_hadoop_id, callback_url),
+                             kwargs={})
+        t.setDaemon(True)
+        t.start()
+
+        pass
+
 
     def run_job(self, command):
         input_file = "hadoop/run_job.sh.jinja2"

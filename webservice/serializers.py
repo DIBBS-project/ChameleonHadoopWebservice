@@ -14,6 +14,7 @@ class JobSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100, allow_blank=False, default='')
     status = serializers.CharField(max_length=100, allow_blank=False, default='')
     command = serializers.CharField(allow_blank=True, default='')
+    callback_url = serializers.CharField(allow_blank=True, default='')
     history = serializers.SerializerMethodField('get_execution_history')
 
     def get_execution_history(self, job):
@@ -49,6 +50,7 @@ class JobSerializer(serializers.Serializer):
         instance.name = validated_data.get('name', instance.name)
         instance.status = validated_data.get('status', instance.status)
         instance.parameters = validated_data.get('parameters', instance.status)
+        instance.callback_url = validated_data.get('callback_url', instance.callback_url)
 
         if instance.file_id:
             instance.save()

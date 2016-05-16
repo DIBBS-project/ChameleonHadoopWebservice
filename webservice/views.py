@@ -92,6 +92,9 @@ def run_hadoop_job(request, pk):
         execution.application_hadoop_id = response["application_hadoop_id"]
         execution.save()
 
+        if job.callback_url:
+            mister_hadoop.watch_for_end_jobs_and_callback(execution.application_hadoop_id, job.callback_url)
+
         return Response(
             {"status": "ok",
              "application_hadoop_id": execution.application_hadoop_id},

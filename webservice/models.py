@@ -10,6 +10,7 @@ class Job(models.Model):
     name = models.CharField(max_length=100, blank=False, default=generate_uuid)
     status = models.CharField(max_length=100, blank=False, default="created")
     command = models.TextField(blank=True, default="")
+    callback_url = models.TextField(blank=True, default="")
 
 
 class Execution(models.Model):
