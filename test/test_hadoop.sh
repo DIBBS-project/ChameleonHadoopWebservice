@@ -21,6 +21,7 @@ curl --header "username: root" -X GET $REMOTE_HADOOP_WEBSERVICE_HOST/fs/rm/outpu
 curl --header "username: root" -X GET $REMOTE_HADOOP_WEBSERVICE_HOST/hdfs/rm/test.jar/
 curl --header "username: root" -X GET $REMOTE_HADOOP_WEBSERVICE_HOST/hdfs/rmdir/user/root/
 curl --header "username: root" -X GET $REMOTE_HADOOP_WEBSERVICE_HOST/hdfs/rmdir/user/$USER/
+curl --header "username: root" -X GET $REMOTE_HADOOP_WEBSERVICE_HOST/hdfs/rmdir/user/
 
 # Upload local files to the application
 curl --header "username: $USER" -i -X POST -F 'data=@test.jar' $REMOTE_HADOOP_WEBSERVICE_HOST/fs/upload/test.jar/
