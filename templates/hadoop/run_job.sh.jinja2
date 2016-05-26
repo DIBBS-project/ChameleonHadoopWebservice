@@ -1,3 +1,6 @@
 #!/bin/bash
 
+sudo adduser cc2 || true
+sudo usermod -a -G supergroup cc || true
+
 sudo -u {{ user }} $HADOOP_HOME/bin/hadoop jar tmp/{{ command }} {{ suffix }}
