@@ -249,7 +249,7 @@ def upload_fs_file(request, path):
         mister_fs.create_file(path, file_content)
 
         # Put the file on FS
-        mister_hadoop.add_local_file_to_hdfs(path, filename)
+        mister_hadoop.add_local_file_to_hdfs(path, filename, request.username)
         return Response({"status": "ok"}, status=201)
 
 ##############################
