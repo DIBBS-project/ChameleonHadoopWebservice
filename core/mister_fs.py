@@ -40,7 +40,7 @@ class MisterFs:
     def _init_folder(self):
         if not os.path.exists(self.path):
             os.makedirs(self.path)
-            os.chmod(self.path, 777)
+            os.chmod(self.path, 0o777)
 
     def list_files(self, given_path):
         path = "%s/%s" % (self.path, given_path)
