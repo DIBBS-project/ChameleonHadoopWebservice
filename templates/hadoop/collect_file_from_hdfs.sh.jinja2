@@ -2,6 +2,5 @@
 
 sudo adduser {{ user }} || true
 sudo usermod -a -G supergroup {{ user }} || true
-sudo chmod 777 $HADOOP_HOME/bin/hadoop || true
 
 sudo -u {{ user }} $HADOOP_HOME/bin/hadoop fs -copyToLocal /{{ hdfs_path }} tmp/{{ output_file }}
