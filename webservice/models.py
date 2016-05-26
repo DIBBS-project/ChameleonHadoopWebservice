@@ -11,6 +11,7 @@ class Job(models.Model):
     status = models.CharField(max_length=100, blank=False, default="created")
     command = models.TextField(blank=True, default="")
     callback_url = models.TextField(blank=True, default="")
+    user = models.CharField(max_length=100, blank=False, default="cc")
 
 
 class Execution(models.Model):

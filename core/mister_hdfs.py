@@ -80,12 +80,13 @@ class MisterHdfs:
             operation += "&recursive=true"
         return self.call_whdfs(hdfs_path, operation, "DELETE")
 
-    def merge_directory(self, hdfs_path, local_path):
+    def merge_directory(self, hdfs_path, local_path, user):
         input_file = "hadoop/merge_hdfs_folder.sh.jinja2"
         output_file = "tmp/merge_hdfs_folder.sh"
         context = {
             "hdfs_path": hdfs_path,
-            "output_file": local_path
+            "output_file": local_path,
+            "user": user
         }
         generate_template_file(input_file, output_file, context)
         subprocess.call("bash %s" % (output_file), shell=True)

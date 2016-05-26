@@ -74,22 +74,24 @@ class MisterHadoop:
     def call_whdfs(self, action, http_method):
         return call_rest("%s/%s" % (self.url_postfix, action), http_method)
 
-    def add_local_file_to_hdfs(self, hdfs_path, local_path):
+    def add_local_file_to_hdfs(self, hdfs_path, local_path, user):
         input_file = "hadoop/add_local_file_to_hdfs.sh.jinja2"
         output_file = "tmp/add_local_file_to_hdfs.sh"
         context = {
             "hdfs_path": hdfs_path,
-            "local_path": local_path
+            "local_path": local_path,
+            "user": user
         }
         generate_template_file(input_file, output_file, context)
         subprocess.call("bash %s" % (output_file), shell=True)
         pass
 
-    def create_hdfs_folder(self, hdfs_path):
+    def create_hdfs_folder(self, hdfs_path, user):
         input_file = "hadoop/create_hdfs_folder.sh.jinja2"
         output_file = "tmp/create_hdfs_folder.sh"
         context = {
-            "hdfs_path": hdfs_path
+            "hdfs_path": hdfs_path,
+            "user": user
         }
         generate_template_file(input_file, output_file, context)
         subprocess.call("bash %s" % (output_file), shell=True)
@@ -123,8 +125,7 @@ class MisterHadoop:
 
         pass
 
-
-    def run_job(self, command):
+    def run_job(self, command, user):
         input_file = "hadoop/run_job.sh.jinja2"
         output_file = "tmp/run_job.sh"
 
@@ -133,7 +134,8 @@ class MisterHadoop:
 
         context = {
             "command": command,
-            "suffix": " 2>&1 | tee %s &" % (stdout_file)
+            "suffix": " 2>&1 | tee %s &" % (stdout_file),
+            "user": user
         }
         generate_template_file(input_file, output_file, context)
 
@@ -156,12 +158,13 @@ class MisterHadoop:
 
         return {"application_hadoop_id": application_hadoop_id}
 
-    def collect_file_from_hdfs(self, hdfs_name, local_path):
+    def collect_file_from_hdfs(self, hdfs_name, local_path, user):
         input_file = "hadoop/collect_file_from_hdfs.sh.jinja2"
         output_file = "tmp/collect_file_from_hdfs.sh"
         context = {
             "hdfs_path": hdfs_name,
-            "output_file": local_path
+            "output_file": local_path,
+            "user": user
         }
         generate_template_file(input_file, output_file, context)
         subprocess.call("bash %s" % (output_file), shell=True)

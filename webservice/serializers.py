@@ -9,12 +9,14 @@ def generate_uuid():
 
 mister_hadoop = MisterHadoop()
 
+
 class JobSerializer(serializers.Serializer):
     id = serializers.IntegerField(label='ID', read_only=True)
     name = serializers.CharField(max_length=100, allow_blank=False, default='')
     status = serializers.CharField(max_length=100, allow_blank=False, default='')
     command = serializers.CharField(allow_blank=True, default='')
     callback_url = serializers.CharField(allow_blank=True, default='')
+    user = serializers.CharField(max_length=100, allow_blank=False, default='')
     history = serializers.SerializerMethodField('get_execution_history')
 
     def get_execution_history(self, job):
@@ -51,6 +53,7 @@ class JobSerializer(serializers.Serializer):
         instance.status = validated_data.get('status', instance.status)
         instance.parameters = validated_data.get('parameters', instance.status)
         instance.callback_url = validated_data.get('callback_url', instance.callback_url)
+        instance.user = validated_data.get('user', instance.user)
 
         if instance.file_id:
             instance.save()

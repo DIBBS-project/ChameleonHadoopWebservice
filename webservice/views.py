@@ -17,6 +17,35 @@ from core.mister_hdfs import MisterHdfs
 from django.utils.encoding import smart_str
 
 
+from rest_framework import exceptions
+
+from functools import wraps
+
+
+def expect_username(view_func):
+    """Check that the user is provide a username.
+    """
+
+    def wrapped_view(*args, **kwargs):
+        if len(args) < 1:
+            raise Exception("No request was provided :(")
+        request = args[0]
+        username = None
+        # check if api_token is included in URL
+        if "user" in request.query_params:
+            username = str(request.query_params["username"])
+        # check if api_token in included in request's META field
+        if "HTTP_USERNAME" in request.META:
+            username = request.META.get('HTTP_USERNAME')
+        if username is None:
+            raise exceptions.AuthenticationFailed('No USER has been provided')
+        # Set an "api_token" field to ease its usage by view methods
+        request.username = username
+        return view_func(*args, **kwargs)
+
+    return wraps(view_func)(wrapped_view)
+
+
 def index(request):
     files = []
     return render(request, "index.html", {"files": files})
@@ -33,6 +62,7 @@ mister_hdfs = MisterHdfs()
 
 # Methods related to Jobs
 @api_view(['GET', 'POST'])
+@expect_username
 @csrf_exempt
 def job_list(request):
     """
@@ -53,6 +83,7 @@ def job_list(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@expect_username
 @csrf_exempt
 def job_detail(request, pk):
     """
@@ -81,12 +112,13 @@ def job_detail(request, pk):
 
 
 @api_view(['GET'])
+@expect_username
 @csrf_exempt
 def run_hadoop_job(request, pk):
     if request.method == 'GET' or True:
         # Find the Hadoop job
         job = Job.objects.filter(id=pk).first()
-        response = mister_hadoop.run_job(job.command)
+        response = mister_hadoop.run_job(job.command, request.username)
         execution = Execution()
         execution.job = job
         execution.application_hadoop_id = response["application_hadoop_id"]
@@ -102,6 +134,7 @@ def run_hadoop_job(request, pk):
 
 
 @api_view(['GET'])
+@expect_username
 @csrf_exempt
 def get_running_jobs(request):
     """
@@ -119,6 +152,7 @@ def get_running_jobs(request):
 
 
 @api_view(['GET', 'DELETE'])
+@expect_username
 @csrf_exempt
 def fs_file_detail(request, path=None):
     """
@@ -140,6 +174,7 @@ def fs_file_detail(request, path=None):
 
 
 @api_view(['GET'])
+@expect_username
 @csrf_exempt
 def fs_delete_file(request, path):
     """
@@ -152,6 +187,7 @@ def fs_delete_file(request, path):
 
 
 @api_view(['GET'])
+@expect_username
 @csrf_exempt
 def fs_delete_folder(request, path):
     """
@@ -164,6 +200,7 @@ def fs_delete_folder(request, path):
 
 
 @api_view(['GET'])
+@expect_username
 @csrf_exempt
 def create_fs_folder(request, path):
     """
@@ -176,6 +213,7 @@ def create_fs_folder(request, path):
 
 
 @api_view(['GET'])
+@expect_username
 @csrf_exempt
 def download_fs_file(request, path):
     """
@@ -196,6 +234,7 @@ def download_fs_file(request, path):
 
 
 @api_view(['POST'])
+@expect_username
 @csrf_exempt
 def upload_fs_file(request, path):
     """
@@ -219,6 +258,7 @@ def upload_fs_file(request, path):
 
 
 @api_view(['GET', 'DELETE'])
+@expect_username
 @csrf_exempt
 def hdfs_file_detail(request, path=None):
     """
@@ -257,6 +297,7 @@ def hdfs_file_detail(request, path=None):
 
 
 @api_view(['GET'])
+@expect_username
 @csrf_exempt
 def hdfs_delete_file(request, path):
     """
@@ -269,6 +310,7 @@ def hdfs_delete_file(request, path):
 
 
 @api_view(['GET'])
+@expect_username
 @csrf_exempt
 def hdfs_delete_folder(request, path):
     """
@@ -281,6 +323,7 @@ def hdfs_delete_folder(request, path):
 
 
 @api_view(['GET'])
+@expect_username
 @csrf_exempt
 def create_hdfs_folder(request, path):
     """
@@ -288,11 +331,12 @@ def create_hdfs_folder(request, path):
     """
 
     if request.method == 'GET':
-        mister_hadoop.create_hdfs_folder(path)
+        mister_hadoop.create_hdfs_folder(path, request.username)
         return Response({"status": "ok"})
 
 
 @api_view(['GET'])
+@expect_username
 @csrf_exempt
 def download_hdfs_file(request, hdfspath):
     """
@@ -318,6 +362,7 @@ def download_hdfs_file(request, hdfspath):
 
 
 @api_view(['POST'])
+@expect_username
 @csrf_exempt
 def upload_hdfs_file(request, hdfspath):
     """
@@ -334,11 +379,12 @@ def upload_hdfs_file(request, hdfspath):
         mister_fs.create_file(tmp_filename, file_content)
 
         # Put the file on HDFS
-        mister_hadoop.add_local_file_to_hdfs(hdfspath, tmp_filename)
+        mister_hadoop.add_local_file_to_hdfs(hdfspath, tmp_filename, request.username)
         return Response({"status": "ok"}, status=201)
 
 
 @api_view(['GET'])
+@expect_username
 @csrf_exempt
 def hdfs_copy_to_local(request, hdfspath, localpath):
     """
@@ -352,7 +398,7 @@ def hdfs_copy_to_local(request, hdfspath, localpath):
         filename = hdfspath.split("/")[-1]
 
         try:
-            mister_hadoop.collect_file_from_hdfs(hdfspath, localpath)
+            mister_hadoop.collect_file_from_hdfs(hdfspath, localpath, request.username)
         except:
             return Response({"status": "bad"}, status=404)
 
@@ -360,6 +406,7 @@ def hdfs_copy_to_local(request, hdfspath, localpath):
 
 
 @api_view(['GET'])
+@expect_username
 @csrf_exempt
 def hdfs_merge_directory(request, hdfspath, localpath):
     """
@@ -373,7 +420,7 @@ def hdfs_merge_directory(request, hdfspath, localpath):
         filename = hdfspath.split("/")[-1]
 
         try:
-            mister_hdfs.merge_directory(hdfspath, localpath)
+            mister_hdfs.merge_directory(hdfspath, localpath, request.username)
         except Exception as e:
             print(e)
             return Response({"status": "bad"}, status=404)

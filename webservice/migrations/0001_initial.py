@@ -25,6 +25,8 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(default=webservice.models.generate_uuid, max_length=100)),
                 ('status', models.CharField(default=b'created', max_length=100)),
                 ('command', models.TextField(default=b'', blank=True)),
+                ('callback_url', models.TextField(default=b'', blank=True)),
+                ('user', models.CharField(default=b'cc', max_length=100)),
             ],
         ),
         migrations.AddField(
