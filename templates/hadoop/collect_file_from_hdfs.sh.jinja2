@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sudo $HADOOP_HOME/bin/hadoop fs -copyToLocal /{{ hdfs_path }} tmp/{{ output_file }}
+sudo -u {{ user }} $HADOOP_HOME/bin/hadoop fs -copyToLocal /{{ hdfs_path }} tmp/{{ output_file }}

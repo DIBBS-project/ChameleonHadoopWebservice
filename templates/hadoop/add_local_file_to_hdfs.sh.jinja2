@@ -1,4 +1,4 @@
 #!/bin/bash
 
 #sudo $HADOOP_HOME/bin/hadoop fs -mkdir -p /user/root/
-sudo $HADOOP_HOME/bin/hadoop fs -put tmp/{{ local_path }} /{{ hdfs_path }}
+sudo -u {{ user }} $HADOOP_HOME/bin/hadoop fs -put tmp/{{ local_path }} /{{ hdfs_path }}

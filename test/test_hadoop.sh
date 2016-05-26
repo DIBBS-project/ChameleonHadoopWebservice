@@ -5,7 +5,7 @@ set -x
 #REMOTE_HADOOP_WEBSERVICE_HOST="http://127.0.0.1:8000"
 REMOTE_HADOOP_WEBSERVICE_HOST="http://129.114.111.66:8000"
 CALLBACK_URL="http://requestb.in/t9tni2t9"
-USER="jpastor"
+USER="cc"
 
 function extract_id {
 

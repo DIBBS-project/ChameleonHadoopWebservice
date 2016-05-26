@@ -1,3 +1,3 @@
 #!/bin/bash
 
-sudo $HADOOP_HOME/bin/hadoop jar tmp/{{ command }} {{ suffix }}
+sudo -u {{ user }} $HADOOP_HOME/bin/hadoop jar tmp/{{ command }} {{ suffix }}
