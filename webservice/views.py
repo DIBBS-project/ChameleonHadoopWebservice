@@ -32,7 +32,7 @@ def expect_username(view_func):
         request = args[0]
         username = None
         # check if api_token is included in URL
-        if "user" in request.query_params:
+        if "username" in request.query_params:
             username = str(request.query_params["username"])
         # check if api_token in included in request's META field
         if "HTTP_USERNAME" in request.META:
