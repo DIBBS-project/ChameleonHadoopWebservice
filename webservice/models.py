@@ -6,6 +6,12 @@ def generate_uuid():
     return "%s" % (uuid.uuid4())
 
 
+class Token(models.Model):
+    token = models.CharField(max_length=100, blank=False, default=generate_uuid)
+    user_id = models.IntegerField()
+    username = models.TextField(blank=True, default="root")
+
+
 class Job(models.Model):
     name = models.CharField(max_length=100, blank=False, default=generate_uuid)
     status = models.CharField(max_length=100, blank=False, default="created")

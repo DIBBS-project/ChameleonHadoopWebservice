@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from webservice.models import Job, Execution
+from webservice.models import Job, Execution, Token
 from webservice.serializers import JobSerializer
 
 from django.views.decorators.csrf import csrf_exempt
@@ -21,9 +21,11 @@ from rest_framework import exceptions
 
 from functools import wraps
 
+import logging
+
 
 def expect_username(view_func):
-    """Check that the user is provide a username.
+    """Check that the user has provided a username.
     """
 
     def wrapped_view(*args, **kwargs):
@@ -46,6 +48,98 @@ def expect_username(view_func):
     return wraps(view_func)(wrapped_view)
 
 
+def expect_apitoken(view_func):
+    """Check that the user has provided an api token.
+    """
+
+    def wrapped_view(*args, **kwargs):
+        if len(args) < 1:
+            raise Exception("No request was provided :(")
+        request = args[0]
+        token = None
+        # check if api_token is included in URL
+        if "token" in request.query_params:
+            token = str(request.query_params["token"])
+        # check if api_token in included in request's META field
+        if "HTTP_TOKEN" in request.META:
+            token = request.META.get('HTTP_TOKEN')
+        if token is None:
+            raise exceptions.AuthenticationFailed('No TOKEN has been provided')
+        # Set an "api_token" field to ease its usage by view methods
+        request.token = token
+        return view_func(*args, **kwargs)
+
+    return wraps(view_func)(wrapped_view)
+
+
+def expect_password(view_func):
+    """Check that the user has provided a password.
+    """
+
+    def wrapped_view(*args, **kwargs):
+        if len(args) < 1:
+            raise Exception("No request was provided :(")
+        request = args[0]
+        password = None
+        # check if api_token is included in URL
+        if "password" in request.query_params:
+            password = str(request.query_params["password"])
+        # check if api_token in included in request's META field
+        if "HTTP_PASSWORD" in request.META:
+            password = request.META.get('HTTP_PASSWORD')
+        if password is None:
+            raise exceptions.AuthenticationFailed('No PASSWORD has been provided')
+        # Set an "api_token" field to ease its usage by view methods
+        request.password = password
+        return view_func(*args, **kwargs)
+
+    return wraps(view_func)(wrapped_view)
+
+
+def token_authentication(view_func):
+    """Check that a valid token has been provided.
+    """
+
+    def wrapped_view(*args, **kwargs):
+        if len(args) < 1:
+            raise Exception("No request was provided :(")
+        request = args[0]
+        if not hasattr(request, "token"):
+            raise exceptions.AuthenticationFailed('no token has been provided :(')
+        token = request.token
+        tokens = Token.objects.filter(token=token).all()
+        if len(tokens) == 0:
+            raise exceptions.AuthenticationFailed('token not valid :(')
+        request.username = tokens[0].username
+        return view_func(*args, **kwargs)
+
+    return wraps(view_func)(wrapped_view)
+
+
+def user_authentication(view_func):
+    """Check that a valid user has been provided.
+    """
+
+    def wrapped_view(*args, **kwargs):
+        if len(args) < 1:
+            raise Exception("No request was provided :(")
+        request = args[0]
+        if not hasattr(request, "username") or not hasattr(request, "password"):
+            raise exceptions.AuthenticationFailed('need a username and a password :(')
+        username = request.username
+        password = request.password
+        from django.contrib.auth.models import User
+        users = User.objects.filter(username=username).all()
+        if len(users) == 0:
+            raise exceptions.AuthenticationFailed('user not valid :(')
+        user = User.objects.filter(username=username).first()
+        if not user.check_password(password):
+            raise exceptions.AuthenticationFailed('user not valid :(')
+        return view_func(*args, **kwargs)
+
+    return wraps(view_func)(wrapped_view)
+
+
 def index(request):
     files = []
     return render(request, "index.html", {"files": files})
@@ -55,14 +149,63 @@ mister_hadoop = MisterHadoop()
 mister_fs = MisterFs()
 mister_hdfs = MisterHdfs()
 
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
+
+##############################
+# User management
+##############################
+
+
+@api_view(['POST'])
+@csrf_exempt
+def register_new_user(request):
+    username = request.POST.get("username")
+    password = request.POST.get("password")
+    logger.debug("will create user (%s, %s)" % (username, password))
+
+    from django.contrib.auth.models import User
+    try:
+        user = User.objects.create_user(username=username, password=password)
+        user.save()
+    except:
+        return Response({"status": "failed"})
+
+    return Response({"status": "ok"})
+
+
+@api_view(['GET'])
+@expect_username
+@expect_password
+@user_authentication
+@csrf_exempt
+def generate_new_token(request):
+    import uuid
+    from django.contrib.auth.models import User
+
+    try:
+        user = User.objects.filter(username=request.username).first()
+
+        token = Token()
+        token.token = uuid.uuid4()
+        token.username = request.username
+        token.user_id = user.id
+        token.save()
+
+        return Response({"status": "ok", "token": token.token})
+    except:
+        return Response({"status": "failed"})
+
+
 ##############################
 # Hadoop
 ##############################
 
 
-# Methods related to Jobs
 @api_view(['GET', 'POST'])
-@expect_username
+@expect_apitoken
+@token_authentication
 @csrf_exempt
 def job_list(request):
     """
@@ -83,7 +226,8 @@ def job_list(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@expect_username
+@expect_apitoken
+@token_authentication
 @csrf_exempt
 def job_detail(request, pk):
     """
@@ -112,7 +256,8 @@ def job_detail(request, pk):
 
 
 @api_view(['GET'])
-@expect_username
+@expect_apitoken
+@token_authentication
 @csrf_exempt
 def run_hadoop_job(request, pk):
     if request.method == 'GET' or True:
@@ -134,7 +279,8 @@ def run_hadoop_job(request, pk):
 
 
 @api_view(['GET'])
-@expect_username
+@expect_apitoken
+@token_authentication
 @csrf_exempt
 def get_running_jobs(request):
     """
@@ -152,7 +298,8 @@ def get_running_jobs(request):
 
 
 @api_view(['GET', 'DELETE'])
-@expect_username
+@expect_apitoken
+@token_authentication
 @csrf_exempt
 def fs_file_detail(request, path=None):
     """
@@ -174,7 +321,8 @@ def fs_file_detail(request, path=None):
 
 
 @api_view(['GET'])
-@expect_username
+@expect_apitoken
+@token_authentication
 @csrf_exempt
 def fs_delete_file(request, path):
     """
@@ -187,7 +335,8 @@ def fs_delete_file(request, path):
 
 
 @api_view(['GET'])
-@expect_username
+@expect_apitoken
+@token_authentication
 @csrf_exempt
 def fs_delete_folder(request, path):
     """
@@ -200,7 +349,8 @@ def fs_delete_folder(request, path):
 
 
 @api_view(['GET'])
-@expect_username
+@expect_apitoken
+@token_authentication
 @csrf_exempt
 def create_fs_folder(request, path):
     """
@@ -213,7 +363,8 @@ def create_fs_folder(request, path):
 
 
 @api_view(['GET'])
-@expect_username
+@expect_apitoken
+@token_authentication
 @csrf_exempt
 def download_fs_file(request, path):
     """
@@ -234,7 +385,8 @@ def download_fs_file(request, path):
 
 
 @api_view(['POST'])
-@expect_username
+@expect_apitoken
+@token_authentication
 @csrf_exempt
 def upload_fs_file(request, path):
     """
@@ -252,13 +404,15 @@ def upload_fs_file(request, path):
         mister_hadoop.add_local_file_to_hdfs(path, filename, request.username)
         return Response({"status": "ok"}, status=201)
 
+
 ##############################
 # HDFS
 ##############################
 
 
 @api_view(['GET', 'DELETE'])
-@expect_username
+@expect_apitoken
+@token_authentication
 @csrf_exempt
 def hdfs_file_detail(request, path=None):
     """
@@ -297,7 +451,8 @@ def hdfs_file_detail(request, path=None):
 
 
 @api_view(['GET'])
-@expect_username
+@expect_apitoken
+@token_authentication
 @csrf_exempt
 def hdfs_delete_file(request, path):
     """
@@ -310,7 +465,8 @@ def hdfs_delete_file(request, path):
 
 
 @api_view(['GET'])
-@expect_username
+@expect_apitoken
+@token_authentication
 @csrf_exempt
 def hdfs_delete_folder(request, path):
     """
@@ -323,7 +479,8 @@ def hdfs_delete_folder(request, path):
 
 
 @api_view(['GET'])
-@expect_username
+@expect_apitoken
+@token_authentication
 @csrf_exempt
 def create_hdfs_folder(request, path):
     """
@@ -336,7 +493,8 @@ def create_hdfs_folder(request, path):
 
 
 @api_view(['GET'])
-@expect_username
+@expect_apitoken
+@token_authentication
 @csrf_exempt
 def download_hdfs_file(request, hdfspath):
     """
@@ -362,7 +520,8 @@ def download_hdfs_file(request, hdfspath):
 
 
 @api_view(['POST'])
-@expect_username
+@expect_apitoken
+@token_authentication
 @csrf_exempt
 def upload_hdfs_file(request, hdfspath):
     """
@@ -384,7 +543,8 @@ def upload_hdfs_file(request, hdfspath):
 
 
 @api_view(['GET'])
-@expect_username
+@expect_apitoken
+@token_authentication
 @csrf_exempt
 def hdfs_copy_to_local(request, hdfspath, localpath):
     """
@@ -392,11 +552,6 @@ def hdfs_copy_to_local(request, hdfspath, localpath):
     """
 
     if request.method == 'GET':
-
-        import uuid
-        random_filename = str(uuid.uuid4())
-        filename = hdfspath.split("/")[-1]
-
         try:
             mister_hadoop.collect_file_from_hdfs(hdfspath, localpath, request.username)
         except:
@@ -406,7 +561,8 @@ def hdfs_copy_to_local(request, hdfspath, localpath):
 
 
 @api_view(['GET'])
-@expect_username
+@expect_apitoken
+@token_authentication
 @csrf_exempt
 def hdfs_merge_directory(request, hdfspath, localpath):
     """
@@ -414,11 +570,6 @@ def hdfs_merge_directory(request, hdfspath, localpath):
     """
 
     if request.method == 'GET':
-
-        import uuid
-        random_filename = str(uuid.uuid4())
-        filename = hdfspath.split("/")[-1]
-
         try:
             mister_hdfs.merge_directory(hdfspath, localpath, request.username)
         except Exception as e:
@@ -426,4 +577,3 @@ def hdfs_merge_directory(request, hdfspath, localpath):
             return Response({"status": "bad"}, status=404)
 
         return Response({"status": "ok"}, status=201)
-
