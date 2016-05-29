@@ -2,9 +2,9 @@
 
 set -x
 
-REMOTE_HADOOP_WEBSERVICE_HOST="http://127.0.0.1:8000"
-#REMOTE_HADOOP_WEBSERVICE_HOST="http://129.114.111.66:8000"
-CALLBACK_URL="http://requestb.in/t9tni2t9"
+#REMOTE_HADOOP_WEBSERVICE_HOST="http://127.0.0.1:8000"
+REMOTE_HADOOP_WEBSERVICE_HOST="http://129.114.111.66:8000"
+CALLBACK_URL="http://requestb.in/oxkgbuox"
 USER="foo"
 PASSWORD="bar"
 
@@ -23,10 +23,10 @@ function extract_token {
 }
 
 curl --data "username=$USER&password=$PASSWORD" -X POST $REMOTE_HADOOP_WEBSERVICE_HOST/register_new_user/
-TOKEN_CREATION_OUTPUT=$(curl --header "username: $USER" --header "password: $PASSWORD" -X GET http://127.0.0.1:8000/generate_new_token/)
+TOKEN_CREATION_OUTPUT=$(curl --header "username: $USER" --header "password: $PASSWORD" -X GET $REMOTE_HADOOP_WEBSERVICE_HOST/generate_new_token/)
 TOKEN=$(extract_token $TOKEN_CREATION_OUTPUT)
 
-echo $TOKEN_CREATION_OUTPUT
+echo $TOKEN
 
 # Clean output file in FS folder to prevent interference between tests
 curl --header "token: $TOKEN" -X GET $REMOTE_HADOOP_WEBSERVICE_HOST/fs/rm/output.txt/

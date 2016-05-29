@@ -29,6 +29,15 @@ class Migration(migrations.Migration):
                 ('user', models.CharField(default=b'cc', max_length=100)),
             ],
         ),
+        migrations.CreateModel(
+            name='Token',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('token', models.CharField(default=webservice.models.generate_uuid, max_length=100)),
+                ('user_id', models.IntegerField()),
+                ('username', models.TextField(default=b'root', blank=True)),
+            ],
+        ),
         migrations.AddField(
             model_name='execution',
             name='job',
