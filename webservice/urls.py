@@ -18,6 +18,7 @@ urlpatterns = patterns('',
     # FS Files
     url(r'^fs/ls/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.fs_file_detail),
     url(r'^fs/ls//$', views.fs_file_detail),
+    url(r'^fs/run/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.run_file),
     url(r'^fs/mkdir/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.create_fs_folder),
     url(r'^fs/rm/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.fs_delete_file),
     url(r'^fs/rmdir/(?P<path>[0-9a-zA-Z/_.-]+)/$', views.fs_delete_folder),

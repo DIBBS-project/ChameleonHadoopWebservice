@@ -246,6 +246,20 @@ def create_fs_folder(request, path):
 @expect_apitoken
 @token_authentication
 @csrf_exempt
+def run_file(request, path):
+    """
+    Create an FS folder.
+    """
+
+    if request.method == 'GET':
+        status = mister_fs.run_file(path)
+        return Response(status)
+
+
+@api_view(['GET'])
+@expect_apitoken
+@token_authentication
+@csrf_exempt
 def download_fs_file(request, path):
     """
     Download a FS file

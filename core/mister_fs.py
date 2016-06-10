@@ -83,6 +83,10 @@ class MisterFs:
         path = "%s/%s" % (self.path, given_path)
         return os.makedirs(path)
 
+    def run_file(self, given_path):
+        cmd = "pushd %s; chmod +x %s; ./%s; popd" % (self.path, given_path, given_path)
+        return os.system(cmd)
+
 
 if __name__ == "__main__":
     fs_manager = MisterFs()
