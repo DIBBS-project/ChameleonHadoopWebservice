@@ -3,4 +3,4 @@
 sudo adduser {{ user }} || true
 sudo usermod -a -G supergroup {{ user }} || true
 
-sudo -u {{ user }} $HADOOP_HOME/bin/hadoop fs -mkdir -p /{{ hdfs_path }}
+sudo -u {{ user }} bash -c "source /etc/environment; $HADOOP_HOME/bin/hadoop fs -mkdir -p /{{ hdfs_path }}"
