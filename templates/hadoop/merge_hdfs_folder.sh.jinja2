@@ -3,4 +3,8 @@
 sudo adduser {{ user }} || true
 sudo usermod -a -G supergroup {{ user }} || true
 
+if [ -f "tmp/.{{ output_file }}.crc" ]; then
+  rm -f tmp/.{{ output_file }}.crc
+fi
+
 sudo -u {{ user }} bash -c "source /etc/environment; $HADOOP_HOME/bin/hadoop fs -getmerge -nl /{{ hdfs_path }} tmp/{{ output_file }}"
