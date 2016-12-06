@@ -3,6 +3,7 @@
 sudo adduser {{ user }} || true
 sudo usermod -a -G supergroup {{ user }} || true
 
+# The getmerge operation create an hidden .crc file which can cause to permission errors
 if [ -f "tmp/.{{ output_file }}.crc" ]; then
   rm -f tmp/.{{ output_file }}.crc
 fi
